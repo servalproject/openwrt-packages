@@ -22,7 +22,7 @@ define Package/serval-dna
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+libpthread +librt
+	DEPENDS:=+librt
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 endef
 
