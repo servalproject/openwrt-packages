@@ -22,7 +22,7 @@ define Package/serval-lbard
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+serval-dna
+	DEPENDS:=+serval-dna +libcurl
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 endef
 
