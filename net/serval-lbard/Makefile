@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-lbard
-PKG_VERSION:=START-20150909.3
-PKG_RELEASE=6
+PKG_VERSION:=START-20150909.4
+PKG_RELEASE=7
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/servalproject/lbard.git
@@ -13,7 +13,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_FIXUP:=autoreconf
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DEPENDS:=
+PKG_BUILD_DEPENDS:= +libc
 
 include $(INCLUDE_DIR)/package.mk
 
