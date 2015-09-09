@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-lbard
-PKG_VERSION:=START-20150904.2
-PKG_RELEASE=3
+PKG_VERSION:=START-20150909.1
+PKG_RELEASE=4
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/servalproject/lbard.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=c3cf7fda2ec4a63203392b71d81503e213f5d8d4
+PKG_SOURCE_VERSION:=76c9016290da5e38f90dcc50f20eef1d3f461046
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_FIXUP:=autoreconf
@@ -22,7 +22,7 @@ define Package/serval-lbard
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+serval-dna +libcurl
+	DEPENDS:=+serval-dna
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 endef
 
