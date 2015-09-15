@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-dna
-PKG_VERSION:=START-3277-gf36aac5
-PKG_RELEASE=7
+PKG_VERSION:=MESHEXTENDER-20150915.1
+PKG_RELEASE=8
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/servalproject/serval-dna.git
