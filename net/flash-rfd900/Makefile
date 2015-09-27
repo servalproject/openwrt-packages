@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=flash-rfd900
-PKG_VERSION:=START-20150927.1
-PKG_RELEASE=1
+PKG_VERSION:=START-20150927.2
+PKG_RELEASE=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/servalproject/flash-rfd900.git
@@ -37,7 +37,7 @@ endef
 
 define Package/flash-rfd900/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/lbard $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/flash900 $(1)/usr/bin
 endef
 
 $(eval $(call BuildPackage,flash-rfd900))
