@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-lbard
-PKG_VERSION:=START.20151002.1017.57
-PKG_RELEASE=21
+PKG_VERSION:=START.20151002.1028.34
+PKG_RELEASE=22
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/servalproject/lbard.git
