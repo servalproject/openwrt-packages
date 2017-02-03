@@ -16,22 +16,22 @@ define Package/serval-mesh-extender-2.0
 	SUBMENU:=Mesh networking
 	DEPENDS:=+serval-dna +serval-lbard +flash-rfd900
 	MAINTAINER:=Paul Gardner-Stephen <paul@servalproject.org>
+	URL:=http://servalproject.org
 endef
 
 define Package/serval-mesh-extender/description
 	Top-level package that configures a Serval Mesh Extender 2.0
-	hardware.
+	for use.
 endef
 
 define Package/conffiles
 	/etc/init.d/dropbear
 endef
 
+define Build/Compile
+endef
+
 define Package/serval-mesh-extender-2.0/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/foo $(1)/usr/bin
-
-endef
-
-define Build/Compile
 endef
