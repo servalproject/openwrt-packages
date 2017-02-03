@@ -19,16 +19,19 @@ define Package/serval-mesh-extender-2.0
 endef
 
 define Package/serval-mesh-extender/description
-	Top-level package that configures a GL-AR150, Domino Core or similar
-	device for use as a Serval Mesh Extender.
+	Top-level package that configures a Serval Mesh Extender 2.0
+	hardware.
 endef
 
 define Package/conffiles
-	/etc/init.d/...
+	/etc/init.d/dropbear
 endef
 
 define Package/serval-mesh-extender-2.0/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/flash900 $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/foo $(1)/usr/bin
+
 endef
 
+define Build/Compile
+endef
