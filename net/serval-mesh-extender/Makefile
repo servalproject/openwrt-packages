@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=serval-mesh-extender-2.0
+PKG_NAME:=serval-mesh-extender
 PKG_VERSION:=START.20170117.1
 PKG_RELEASE:=1
 
@@ -9,7 +9,7 @@ PKG_BUILD_DEPENDS:= +libc
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/serval-mesh-extender-2.0
+define Package/serval-mesh-extender
 	TITLE:=Serval Project Mesh Extender 2.0 Main package
 	SECTION:=net
 	CATEGORY:=Network
@@ -31,7 +31,7 @@ endef
 define Build/Compile
 endef
 
-define Package/serval-mesh-extender-2.0/install
+define Package/serval-mesh-extender/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/foo $(1)/usr/bin
 endef
