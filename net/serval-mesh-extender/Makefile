@@ -32,8 +32,8 @@ define Build/Compile
 endef
 
 define Package/serval-mesh-extender/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/foo $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/etc
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/files/etc/banner $(1)/etc
 endef
 
 $(eval $(call BuildPackage,serval-mesh-extender))
