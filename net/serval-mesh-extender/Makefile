@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20170117.1
+PKG_VERSION:=START.20170207.1
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -35,3 +35,5 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/foo $(1)/usr/bin
 endef
+
+$(eval $(call BuildPackage,serval-mesh-extender))
