@@ -33,7 +33,7 @@ endef
 
 define Package/serval-mesh-extender/install
 	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_BIN) ./files/etc/banner $(1)/etc
+	$(INSTALL_CONF) ./files/etc/banner $(1)/etc
 endef
 
 $(eval $(call BuildPackage,serval-mesh-extender))
