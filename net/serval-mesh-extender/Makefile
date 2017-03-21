@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20170322.4
-PKG_RELEASE:=6
+PKG_VERSION:=START.20170322.5
+PKG_RELEASE:=7
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -43,7 +43,6 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/config/system $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/uhttpd $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/wireless.template $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/fstab $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/hotplug.d
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/button
 	$(INSTALL_BIN) ./files/etc/hotplug.d/button/buttons $(1)/etc/hotplug.d/button
