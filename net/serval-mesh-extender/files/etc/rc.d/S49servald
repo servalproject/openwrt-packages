@@ -1,0 +1,34 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=49
+
+start() {
+  # Clear out old inittab incase it tries to include ttyATH0
+  # atleast that way a reboot will get things working.
+  if [ -e /overlay/etc/inittab ]; then
+    rm /overlay/etc/inittab
+    reboot
+  fi
+
+  # Start servald
+  export SERVALINSTANCE_PATH=/serval-var
+  mkdir -p $SERVALINSTANCE_PATH
+  mkdir -p /var/run/serval
+  mkdir -p /serval-var/log
+
+  mount -a
+  
+  # Flash radio if required
+  /serval/flash900 /serval/rfd900 /dev/ttyATH0 230400 >/dos/flash900.log 2>&1 
+
+  /etc/serval/runservald &
+  /etc/serval/runlbard &
+  /etc/serval/otaupdate &
+}
+
+stop() {
+  export SERVALINSTANCE_PATH=/serval-var
+  /serval/servald stop
+  pkill runlbard lbard
+}

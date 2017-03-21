@@ -1,0 +1,85 @@
+
+up=$1
+[ `echo $up | grep / | wc -l` -eq 0 ] && up=`pwd`/$up
+echo upgrading using $up
+
+#
+# Make staging area
+#
+# Create staging directory
+rm -fr /serval-var/tmp
+mkdir -p /serval-var/tmp
+cd /serval-var/tmp
+mkdir -p upgrade
+chmod 700 upgrade
+chown root upgrade
+cd upgrade
+# Remove any stray files in the staging area
+rm -f servald serval.conf
+
+# First see if the upgrade package contains a script to be run
+# in place of this generic upgrade script.
+rm autorun.sh
+tar zxvf $up autorun.sh
+if [ -e autorun.sh ]; then
+   exec ./autorun.sh $up
+fi
+
+#
+# Extract files we need for upgrade
+#
+# Try to extract hardware compatibility file of the upgrade bundle
+# to see if this upgrade bundle is compatible with this hardware.
+platform=`. /lib/ar71xx.sh ; ar71xx_board_name`
+tar zxvf $up platform/$platform
+if [ ! -e platform/$platform ]; then
+   # This upgrade bundle doesn't support this hardware.
+   echo "Upgrade is not compatible with $platform"
+   echo "The upgrade supports the following platforms:"
+   tar ztvf $up platform/ | grep -v "/$" | cut -f3 -d/
+   exit 1
+fi
+# Extract servald binary and config files from upgrade archive
+tar zxvf $up servald
+tar zxvf $up serval.conf
+
+#
+#  Complete /serval file system image
+#
+rm serval.tgz
+tar zxvf $up serval.tgz
+if [ -e serval.tgz ]; then
+   # Clear out old /serval partition contents
+   rm -fr /serval
+   # Extract tarball into /serval
+   tar zxf serval.tgz -C /serval
+fi;
+
+#
+# Do actual upgrade steps: servald
+#
+# Move old binary out
+mv /serval/servald /serval/servald.old
+# Move old config file out
+mv /serval-var/serval.conf /serval/serval.conf.old
+# Move new binary in
+mv servald /serval/servald
+# Move new config file into place
+mv serval.conf /serval-var/serval.conf
+# Stop old binary and start new binary
+/serval/servald.old stop
+/serval/servald start
+
+#
+# Do actual upgrade steps: OpenWRT image
+#
+tar zxvf $up openwrt-ar71xx-generic-${platform}-v1-squashfs-factory.bin
+if [ -e openwrt-ar71xx-generic-${platform}-v1-squashfs-factory.bin ]; then
+  sysupgrade -v openwrt-ar71xx-generic-${platform}-v1-squashfs-factory.bin
+fi;
+
+# Clean up after ourselves
+rm *
+
+# delete upgrade file when successfully applied
+rm $up

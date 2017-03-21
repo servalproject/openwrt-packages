@@ -1,0 +1,85 @@
+#!/bin/sh
+
+#
+# Watch for over-the-air updates, and execute them if available
+#
+#
+bundleid=`cat /dos/otabid.txt`
+
+# Allow 10 seconds for servald to start up
+sleep 10
+
+counter=0
+
+while [ 1 ]
+do
+
+currentversion=`cat /serval/www/ota-update-version.html`
+if [ -z $currentversion ]; then
+  currentversion=0
+fi
+echo "Bundleid = '$bundleid'"
+
+rhizomeversion=`/serval/servald rhizome list | grep -i ${bundleid} | cut -f4 -d:`
+if [ ! -z "$rhizomeversion" ]; then
+  if [ $rhizomeversion -gt $currentversion ]; then
+    # We have found a newer version
+    rm /dos/ota-update
+    /serval/servald rhizome extract file ${bundleid} /dos/ota-update
+    if [ -e /dos/ota-update ]; then
+      chmod 755 /dos/ota-update
+      /dos/ota-update && echo "$rhizomeversion" > /serval/www/ota-update-version.html
+      # Create some nice diagnostic files so that we can work out what version of
+      # binaries we are using.
+      ls -l /serval > /serval/www/ota-update-result.html
+      /serval/servald help > /serval/www/servald.txt
+      strings /serval/lbard > /serval/www/lbard.txt 
+    fi
+  fi
+fi
+
+# Also check for new MeshMS messages, so that we can provide some simple services.
+
+# Generate list of updated conversations, and the offset to which we have read
+rm /tmp/updatedqsos
+/serval/servald meshms list conversations `/serval/servald id self | tail -1 | cut -f1 -d:` | awk -F: '{if ( $4 > $5 ) print $2;}' > /tmp/updatedqsos
+# Iterate through the list, and call the meshms responder to process new messages in each
+xargs -r sh /etc/serval/meshmsresponder < /tmp/updatedqsos
+
+# Also update index.html if we have a helpdesk SID set, to show the most recent few
+# replies.  This implictly sets the correct index page.
+# Setup index.html based on whether this unit has a helpdesk set or not.
+if [ -e /dos/helpdesk.sid ]; then
+  apip=172.`cat /tmp/apip.txt`.1
+  helpdesksid=`cat /dos/helpdesk.sid`
+  cat /serval/www/index-helpdesk-template.html | sed -e "s/HELPDESKSID/${helpdesksid}/g" -e "s/MESHEXTENDERIP/${apip}/g" >/serval/www/index-temp.html
+
+  servald meshms list messages `servald id self | tail -1` `cat /dos/helpdesk.sid` | awk -F: '{ if ($4 == "<" ) { print; } }' | grep "helpsay " | tail -10 | cut -f5- -d: >/serval-var/helpreplies.txt
+  msgs=`cat /serval-var/helpreplies.txt | wc -l`
+  if [ "${msgs}" = "0" ]; then
+      echo "<tr><td>NO MESSAGES FROM THE HELP DESK</td></tr>" >>/serval/www/index-temp.html
+  else
+      cat /serval-var/helpreplies.txt | awk '{ printf("<tr><td>%s</td></tr>\n",$*); }' >>/serval/www/index-temp.html
+  fi
+  
+  cat /serval/www/index-helpdesk-footer.html >>/serval/www/index-temp.html
+  # Move the new version in quickly, to stop people getting half-loaded pages
+  # (page is set to auto-reload every 15 seconds, so that replies show up.
+  mv /serval/www/index-temp.html /serval/www/index.html
+else
+  cat /serval/www/index-nohelpdesk-template.html >/serval/www/index.html
+fi
+
+
+# Stop servald every 15 minutes in case it stops responding
+# (which there is a problem with it doing: it looks alive, but rhizome transport
+# doesn't seem to happen. similarly sometimes MDP fails. not sure why).
+counter=$(($counter + 10))
+echo $counter >/tmp/servald-reset-counter
+if [ $counter -gt 900 ]; then
+  counter=0
+  /serval/servald stop
+fi
+
+sleep 10
+done
