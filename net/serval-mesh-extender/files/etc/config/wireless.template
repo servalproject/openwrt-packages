@@ -11,7 +11,8 @@ config wifi-device radio0
         list ht_capab	DSSS_CCK-40
                                						                                                      
 config wifi-iface adhoc                                
-        option device   radio0
+        option ifname   adhoc0
+	option device   radio0
         option ssid     mesh.servalproject.org        
         option network  adhoc                          
         option mode     adhoc
@@ -19,6 +20,7 @@ config wifi-iface adhoc
         option bgscan   0                             
                                						                                                                                                                                                            
 config wifi-iface public                      
+	option ifname     adhoc0
         option device     radio0
         option network    public              
         option mode       ap                  
