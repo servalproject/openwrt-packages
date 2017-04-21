@@ -10,10 +10,10 @@ config wifi-device radio0
   	list ht_capab	RX-STBC1
         list ht_capab	DSSS_CCK-40
                                						                                                      
-config wifi-iface mesh                                
+config wifi-iface adhoc                                
         option device   radio0
         option ssid     mesh.servalproject.org        
-        option network  mesh                          
+        option network  adhoc                          
         option mode     adhoc
         option bssid    02:ca:ff:dd:ca:ce             
         option bgscan   0                             

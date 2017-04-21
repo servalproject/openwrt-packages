@@ -23,7 +23,7 @@ config interface public
 	option netmask	'255.255.255.0'
 	option macaddr	'82:APETHER'
 
-config interface mesh
+config interface adhoc
 	option ifname	'adhoc0'
 	option proto	static
 	option ipaddr	'10.MESHIP'
