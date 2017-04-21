@@ -64,6 +64,9 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/serval/runlbard $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/runservald $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/serval.conf $(1)/etc/serval
+	$(INSTALL_BIN) ./files/etc/serval/rfd900-43-91.ihx $(1)/etc/serval
+	$(INSTALL_BIN) ./files/etc/serval/rfd900-82-86.ihx $(1)/etc/serval
+	$(INSTALL_BIN) ./files/etc/serval/rfd900-82-91.ihx $(1)/etc/serval
 	$(INSTALL_DIR) $(1)/mesh-extender
 	$(INSTALL_BIN) ./files/mesh-extender/upgrade $(1)/mesh-extender
 	$(INSTALL_DIR) $(1)/serval
