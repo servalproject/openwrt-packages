@@ -49,6 +49,7 @@ EOF
   else
      # XXX - No bulk storage -- work out what to do.
      # We are now using microSD instead of USB, so our remedial options are different
+     exit
   fi
 
   e2fsck -y ${dev}2
@@ -62,7 +63,8 @@ EOF
   if [ -e ${dev}1 ] && [ -e /dos/MeshExtender ]; then
     # on first boot, the partitions are mounted under /tmp instead of in
     # the right place, so reboot
-#    reboot
+    sleep 60 # Give us time to log in remotely to fix anything broken
+    reboot
   fi
   # If that wasn't the problem, and there is no device, or it hasn't mounted,
   # then we have a bigger problem ...
@@ -73,7 +75,7 @@ EOF
     # To at least alert the user that this is happening, we will
     # blink the LEDs in a distinctive pattern.
     # XXX - We might be able to use the GPIO that cuts USB host power to fix this situation.
-  
+    echo "WARNING: Could not mount /serval or /serval-var"  
   fi 
  
 }
