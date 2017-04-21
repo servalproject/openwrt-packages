@@ -20,20 +20,20 @@ if [ -z $currentversion ]; then
 fi
 echo "Bundleid = '$bundleid'"
 
-rhizomeversion=`/serval/servald rhizome list | grep -i ${bundleid} | cut -f4 -d:`
+rhizomeversion=`servald rhizome list | grep -i ${bundleid} | cut -f4 -d:`
 if [ ! -z "$rhizomeversion" ]; then
   if [ $rhizomeversion -gt $currentversion ]; then
     # We have found a newer version
     rm /dos/ota-update
-    /serval/servald rhizome extract file ${bundleid} /dos/ota-update
+    servald rhizome extract file ${bundleid} /dos/ota-update
     if [ -e /dos/ota-update ]; then
       chmod 755 /dos/ota-update
       /dos/ota-update && echo "$rhizomeversion" > /serval/www/ota-update-version.html
       # Create some nice diagnostic files so that we can work out what version of
       # binaries we are using.
       ls -l /serval > /serval/www/ota-update-result.html
-      /serval/servald help > /serval/www/servald.txt
-      strings /serval/lbard > /serval/www/lbard.txt 
+      servald help > /serval/www/servald.txt
+      strings /usr/bin/lbard > /serval/www/lbard.txt 
     fi
   fi
 fi
@@ -42,7 +42,7 @@ fi
 
 # Generate list of updated conversations, and the offset to which we have read
 rm /tmp/updatedqsos
-/serval/servald meshms list conversations `/serval/servald id self | tail -1 | cut -f1 -d:` | awk -F: '{if ( $4 > $5 ) print $2;}' > /tmp/updatedqsos
+servald meshms list conversations `servald id self | tail -1 | cut -f1 -d:` | awk -F: '{if ( $4 > $5 ) print $2;}' > /tmp/updatedqsos
 # Iterate through the list, and call the meshms responder to process new messages in each
 xargs -r sh /etc/serval/meshmsresponder < /tmp/updatedqsos
 
@@ -78,7 +78,7 @@ counter=$(($counter + 10))
 echo $counter >/tmp/servald-reset-counter
 if [ $counter -gt 900 ]; then
   counter=0
-  /serval/servald stop
+  servald stop
 fi
 
 sleep 10
