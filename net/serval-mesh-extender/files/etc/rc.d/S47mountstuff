@@ -54,8 +54,8 @@ EOF
      fi
   fi
 
-  e2fsck -y ${dev}2
-  e2fsck -y ${dev}3
+  fsck -y ${dev}2
+  fsck -y ${dev}3
   dosfsck -y ${dev}1
   
   mount ${dev}1 /dos
