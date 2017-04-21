@@ -1,0 +1,35 @@
+#!/bin/bash
+
+owbox=serval@192.168.56.104
+
+# 1. Push to github
+git push origin master
+
+PKG_VERSION=START.`date +%Y%m%d.%H%M.%S`
+
+PKG_RELEASE=`grep PKG_RELEASE:= Makefile | cut -f2 -d=`
+echo PKG_RELEASE=${PKG_RELEASE}
+(( PKG_RELEASE += 1 ))
+echo PKG_RELEASE=${PKG_RELEASE}
+exit
+
+cat Makefile | sed -e "s/^PKG_VERSION:=.*$/PKG_VERSION:=${PKG_VERSION}/" -e "s/^PKG_RELEASE:=.*$/PKG_RELEASE:=${PKG_RELEASE}/g" > Makefile.tmp
+cat Makefile.tmp
+mv Makefile.tmp Makefile
+git commit -m "Update serval-mesh-extender package version" Makefile
+
+# 3. Push openwrt-packages to github
+git push origin MeshExtender2.0
+
+
+# 4. ssh to openwrt build box, run up script, build
+pkg_file=serval-mesh-extender_${PKG_VERSION}-${PKG_RELEASE}_ar71xx.ipk
+ssh ${owbox} "( cd o ; scripts/feeds update serval ; scripts/feeds install -a serval ; scripts/feeds install -p serval ; make V=99 package/serval-mesh-extender/compile package/serval-mesh-extender/install ; ls -l ${pkg_file} )"
+
+# 6. scp compiles binary from openwrt build box
+if [ -e serval-mesh-extender.ipk ]; then
+  rm serval-mesh-extender.ipk 
+fi
+scp ${owbox}:o/bin/ar71xx/packages/serval/${pkg_file} serval-mesh-extender.ipk
+ls -l serval-mesh-extender.ipk
+file serval-mesh-extender.ipk
