@@ -5,24 +5,69 @@ START=47
 
 start() {
 
-  if [ ! -e /dev/sda1 ]; then
+  if [ -e /dev/mmcblk0 ]; then
+     # Bulk storage on SPI microSD
+     dev=/dev/mmcblk0p
+     if [ ! -e /dev/mmcblk0p3 ]; then
+       # microSD card is not partitioned, so prepare it
+       fdisk /dev/mmcblk0 <<EOF
+d
+1
+d
+2
+d
+3
+d
+4
+n
+p
+1
+
++250M
+n
+p
+2
+
++1G
+n
+p
+3
+
+
+t
+1
+c
+w
+EOF
+	mkfs.vfat /dev/mmcblk0p1
+	mkfs.ext2 /dev/mmcblk0p2
+	mkfs.ext2 /dev/mmcblk0p3
+     fi
+  else if [  -e /dev/sda1 ]; then
+     # Bulk storage on USB
+     dev=/dev/sda
+  else
      # XXX - No bulk storage -- work out what to do.
      # We are now using microSD instead of USB, so our remedial options are different
   fi
 
-  e2fsck -y /dev/sda2
-  e2fsck -y /dev/sda3
-  dosfsck -y /dev/sda1
-  mount -a
-  if [ -e /dev/sda1 ] && [ -e /dos/MeshExtender ]; then
+  e2fsck -y ${dev}2
+  e2fsck -y ${dev}3
+  dosfsck -y ${dev}1
+  
+  mount ${dev}1 /dos
+  mount ${dev}2 /serval
+  mount ${dev}3 /serval-var
+
+  if [ -e ${dev}1 ] && [ -e /dos/MeshExtender ]; then
     # on first boot, the partitions are mounted under /tmp instead of in
     # the right place, so reboot
-    reboot
+#    reboot
   fi
   # If that wasn't the problem, and there is no device, or it hasn't mounted,
   # then we have a bigger problem ...
-  if [ ! -e /dev/sda1 ] || [ -e /serval/MeshExtender ] || [ -e /serval-var/MeshExtender ]; then
-    # No USB present, or failed to mount -- this is usually caused by a known hardware bug
+  if [ ! -e ${dev}1 ] || [ -e /serval/MeshExtender ] || [ -e /serval-var/MeshExtender ]; then
+    # No storage present, or failed to mount -- this can be caused by a known hardware bug
     # in the Atheros 9k USB host controller. It can only be fixed by 
     # physically removing power -- a soft reset doesn't work.
     # To at least alert the user that this is happening, we will
