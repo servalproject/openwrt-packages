@@ -17,8 +17,6 @@ start() {
   mkdir -p /var/run/serval
   mkdir -p /serval-var/log
 
-  mount -a
-  
   # Flash radio if required
   flash900 /etc/serval/rfd900 /dev/ttyATH0 230400 >/dos/flash900.log 2>&1 
 
