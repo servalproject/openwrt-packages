@@ -19,7 +19,7 @@ if [ $BUTTON = wps ]; then
             /mesh-extender/upgrade /dos/SERVAL.UP
           else
             # see if there is an updated version of servald from rhizome
-            /serval/servald rhizome extract file ${bundleid} /dos/serval.up
+            servald rhizome extract file ${bundleid} /dos/serval.up
             if [ -e /dos/serval.up ]; then
                /mesh-extender/upgrade /dos/serval.up
             fi          
@@ -27,9 +27,9 @@ if [ $BUTTON = wps ]; then
        fi 
      else
        # long press = factory reset
-       /mesh-extender/upgrade /serval/serval.factory
+       /etc/serval/upgrade /serval/serval.factory
      fi
-     /serval/servald stop ; /serval/servald start
+     servald stop ; servald start
   fi
 fi
 
