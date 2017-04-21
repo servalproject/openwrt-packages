@@ -8,10 +8,7 @@ git push origin master
 PKG_VERSION=START.`date +%Y%m%d.%H%M.%S`
 
 PKG_RELEASE=`grep PKG_RELEASE:= Makefile | cut -f2 -d=`
-echo PKG_RELEASE=${PKG_RELEASE}
 (( PKG_RELEASE += 1 ))
-echo PKG_RELEASE=${PKG_RELEASE}
-exit
 
 cat Makefile | sed -e "s/^PKG_VERSION:=.*$/PKG_VERSION:=${PKG_VERSION}/" -e "s/^PKG_RELEASE:=.*$/PKG_RELEASE:=${PKG_RELEASE}/g" > Makefile.tmp
 cat Makefile.tmp
