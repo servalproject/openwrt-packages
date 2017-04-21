@@ -43,13 +43,15 @@ EOF
 	mkfs.ext2 /dev/mmcblk0p2
 	mkfs.ext2 /dev/mmcblk0p3
      fi
-  else if [  -e /dev/sda1 ]; then
-     # Bulk storage on USB
-     dev=/dev/sda
   else
-     # XXX - No bulk storage -- work out what to do.
-     # We are now using microSD instead of USB, so our remedial options are different
-     exit
+     if [  -e /dev/sda1 ]; then
+        # Bulk storage on USB
+        dev=/dev/sda
+     else
+        # XXX - No bulk storage -- work out what to do.
+        # We are now using microSD instead of USB, so our remedial options are different
+        exit
+     fi
   fi
 
   e2fsck -y ${dev}2
