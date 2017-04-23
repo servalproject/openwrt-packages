@@ -81,6 +81,23 @@ EOF
     # XXX - We might be able to use the GPIO that cuts USB host power to fix this situation.
     echo "WARNING: Could not mount /serval or /serval-var"  
   fi 
+
+  # Finally, read the EEPROM on the power cable, and set some parameters
+  otabid=`flash900 eeprom /dev/ttyATH0 directives get OTABID | cut -f2 -d=`
+  yesroot=`flash900 eeprom /dev/ttyATH0 directives get YESROOT | cut -f2 -d=`
+  noroot=`flash900 eeprom /dev/ttyATH0 directives get NOROOT | cut -f2 -d=`
+  if [ "x$otabid" != "x" ]; then
+    echo $otabid >/dos/otabid.txt
+  fi
+  if [ "x$yesroot" != "x" ]; then
+    echo $yesroot >/dos/yesroot
+    rm /dos/noroot
+  fi
+  if [ "x$noroot" != "x" ]; then
+    touch /dos/noroot
+    rm /dos/yesroot
+  fi
+  
  
 }
 
