@@ -62,7 +62,9 @@ EOF
   mount ${dev}2 /serval
   mount ${dev}3 /serval-var
 
-  if [ -e ${dev}1 ] && [ -e /dos/MeshExtender ]; then
+  dosmounted=`mount | grep /dos | wc -l`
+
+  if [ -e ${dev}1 ] && [ "x$dosmounted" == "x0" ]; then
     # on first boot, the partitions are mounted under /tmp instead of in
     # the right place, so reboot
     sleep 60 # Give us time to log in remotely to fix anything broken
