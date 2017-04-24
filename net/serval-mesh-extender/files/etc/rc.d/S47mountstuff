@@ -83,6 +83,7 @@ EOF
   fi 
 
   # Finally, read the EEPROM on the power cable, and set some parameters
+  flash900 eeprom /dev/ttyATH0 directives list > /serval-var/eeprom.directives
   otabid=`flash900 eeprom /dev/ttyATH0 directives get OTABID | cut -f2 -d=`
   yesroot=`flash900 eeprom /dev/ttyATH0 directives get YESROOT | cut -f2 -d=`
   noroot=`flash900 eeprom /dev/ttyATH0 directives get NOROOT | cut -f2 -d=`
