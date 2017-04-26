@@ -37,7 +37,6 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/dos/MeshExtender $(1)/dos
 	$(INSTALL_BIN) ./files/etc/banner.meshextender $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/dhcp $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/fstab $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/network.template $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/system $(1)/etc/config
