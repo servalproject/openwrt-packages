@@ -1,3 +1,8 @@
+#!/bin/sh /etc/rc.common
+
+START=94
+
+start() {
 # Run dnsmasq on each interface, redirecting all enquiries to the right local IP address
 # since we don't route anything.
 
@@ -9,7 +14,13 @@
 # Get list of interface names and IP addresses
 list=`ifconfig | egrep "^[a-z]|inet addr:|inet " | sed -e 's/	/ /g' -e 's/inet addr:/inet:/g' -e 's/inet /inet:/g' -e 's/^ *inet:/IP:/g' -e 's/ .*$//g' -e 's/:$//g' | grep -v 127.0.0.1`
 
-kill `ps | grep dnsmasq | grep -v grep |awk '{ print $1}' `
+killall dnsmasq
+if [ -e /etc/rc.d/S35odhcpd ]; then
+  rm /etc/rc.d/S35odhcpd ]
+fi
+if [ -e /etc/rc.d/S60dnsmasq ]; then
+  rm /etc/rc.d/S60dnsmasq ]
+fi
 
 interface=
 for line in $list
@@ -34,3 +45,5 @@ done
 
 # Start with default home page on captive portal.
 cat /serval/www/index-nohelpdesk-template.html >/serval/www/index.html
+
+}
