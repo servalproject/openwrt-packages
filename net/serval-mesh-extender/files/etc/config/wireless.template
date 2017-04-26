@@ -20,7 +20,7 @@ config wifi-iface adhoc
         option bgscan   0                             
                                						                                                                                                                                                            
 config wifi-iface public                      
-	option ifname     adhoc0
+	option ifname     wlan0
         option device     radio0
         option network    public              
         option mode       ap                  
