@@ -29,4 +29,7 @@ start() {
 
     /etc/serval/boot_report OK "Exiting S99mountcheck"    
 
+    # Put regular home page in place
+    cp /tmp/www/index.html /tmp/www/bootlog.html
+    cp /etc/serval/index_postboot.html /tmp/www/index.html
 }
