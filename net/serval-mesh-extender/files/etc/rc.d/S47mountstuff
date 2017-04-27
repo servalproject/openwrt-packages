@@ -158,6 +158,11 @@ EOF
     rm /dos/yesroot
   fi
   lines=`wc -l < /serval-var/eeprom.directives`
+  # Try a second time if we at first read no directives
+  if [ "$xlines" == "x0" ]; then
+      flash900 eeprom /dev/ttyATH0 directives list > /serval-var/eeprom.directives  
+  fi
+  
   /etc/serval/boot_report OK "Read Radio EEPROM settings (${lines} lines)"
 
   /etc/serval/boot_report OK "Exiting S47mountstuff"    
