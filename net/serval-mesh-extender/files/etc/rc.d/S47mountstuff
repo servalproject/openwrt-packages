@@ -139,6 +139,8 @@ EOF
   # exit silent mode when asked to dump eeprom contents.
   /etc/serval/boot_report OK "Reading Radio EEPROM settings"
   flash900 eeprom /dev/ttyATH0 directives list > /serval-var/eeprom.directives
+  flash900 eeprom /dev/ttyATH0 dump > /serval-var/eeprom.dump
+
   otabid=`flash900 eeprom /dev/ttyATH0 directives get OTABID | cut -f2 -d=`
   yesroot=`flash900 eeprom /dev/ttyATH0 directives get YESROOT | cut -f2 -d=`
   noroot=`flash900 eeprom /dev/ttyATH0 directives get NOROOT | cut -f2 -d=`
