@@ -65,7 +65,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/serval/boot_index_middle.html $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/boot_index_top.html $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/boot_reporti $(1)/etc/serval
- 	$(INSTALL_BIN) ./files/etc/serval/rfd900-43-91.ihx $(1)/etc/serval
+	$(INSTALL_BIN) ./files/etc/serval/rfd900-43-91.ihx $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/rfd900-82-86.ihx $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/rfd900-82-91.ihx $(1)/etc/serval
 	$(INSTALL_DIR) $(1)/mesh-extender
