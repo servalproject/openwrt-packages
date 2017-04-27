@@ -65,22 +65,28 @@ EOF
   
   umount /dos
   mount ${dev}1 /dos
-  if [ $? == 255 ]; then
+  if [ $? == 255 ]; then    
     echo "Reformatting /dos"
     mkfs.vfat ${dev}1
     mount ${dev}1 /dos
   fi
-  mount ${dev}2 /serval
+  mount ${dev}2 /serval > /tmp/mount2.error 2>&1
   if [ $? == 255 ]; then
-     echo "Reformatting /serval"
-     mkfs.ext2 ${dev}2
-    mount ${dev}2 /serval
+     reformat=`cat /tmp/mount2.error | egrep "Invalid argument|Super|super" | wc -l`
+     if [ "x$reformat" != "x0" ]; then
+       echo "Reformatting /serval"
+       mkfs.ext2 ${dev}2
+       mount ${dev}2 /serval
+     fi
   fi
-  mount ${dev}3 /serval-var
+  mount ${dev}3 /serval-var > /tmp/mount3.error 2>&1
   if [ $? == 255 ]; then
-    echo "Reformatting /serval-var"
-    mkfs.vfat ${dev}3
-    mount ${dev}3 /serval-var
+     reformat=`cat /tmp/mount3.error | egrep "Invalid argument|Super|super" | wc -l`
+     if [ "x$reformat" != "x0" ]; then
+       echo "Reformatting /serval-var"
+       mkfs.vfat ${dev}3
+       mount ${dev}3 /serval-var
+    fi
   fi
 
   mount > /tmp/mount47.log
