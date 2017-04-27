@@ -3,6 +3,9 @@
 START=94
 
 start() {
+
+    /etc/serval/boot_report OK "Entering S94captiveportal"    
+
 # Run dnsmasq on each interface, redirecting all enquiries to the right local IP address
 # since we don't route anything.
 
@@ -13,6 +16,8 @@ start() {
 
 # Get list of interface names and IP addresses
 list=`ifconfig | egrep "^[a-z]|inet addr:|inet " | sed -e 's/	/ /g' -e 's/inet addr:/inet:/g' -e 's/inet /inet:/g' -e 's/^ *inet:/IP:/g' -e 's/ .*$//g' -e 's/:$//g' | grep -v 127.0.0.1`
+
+    /etc/serval/boot_report OK "Starting dnsmasq"    
 
 # We really should figure out how to just not have these things be in the base image
 # to begin with.
@@ -44,8 +49,13 @@ do
     interface=$line
   fi
 done
+    masqs=`ps | grep dnsmasq | wc -l`
+    /etc/serval/boot_report OK "Started ${masqs} dnsmasq processes"    
+
 
 # Start with default home page on captive portal.
 cat /serval/www/index-nohelpdesk-template.html >/serval/www/index.html
+
+    /etc/serval/boot_report OK "Exiting S94captiveportal"    
 
 }

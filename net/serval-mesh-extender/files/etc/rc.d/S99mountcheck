@@ -5,6 +5,8 @@ START=99
 
 start() {
 
+    /etc/serval/boot_report OK "Entering S99mountcheck"    
+
     # Check if things that we mounted in S47 are still mounted.
     # This is required because it seems that when the jffs finishes preparing
     # for the first time, the mountpoints are removed, requiring us to normally
@@ -20,5 +22,11 @@ start() {
     if [ "x$before" != "x$after" ]; then
        # For now, just notice the problem.  We'll implement action soon
        echo "$before $after" > /tmp/mount_problem
+       /etc/serval/boot_report ERROR "/serval and /serval-var unmounted (probably by jffs2 mount) -- rebooting"    
+       sleep 10
+       reboot
     fi
+
+    /etc/serval/boot_report OK "Exiting S99mountcheck"    
+
 }

@@ -4,25 +4,36 @@
 START=49
 
 start() {
-  # Clear out old inittab incase it tries to include ttyATH0
-  # atleast that way a reboot will get things working.
-  if [ -e /overlay/etc/inittab ]; then
-    rm /overlay/etc/inittab
-    reboot
-  fi
+    /etc/serval/boot_report OK "Entering S49servald"
 
-  # Start servald
-  export SERVALINSTANCE_PATH=/serval-var
-  mkdir -p $SERVALINSTANCE_PATH
-  mkdir -p /var/run/serval
-  mkdir -p /serval-var/log
+    # Clear out old inittab incase it tries to include ttyATH0
+    # atleast that way a reboot will get things working.
 
-  # Flash radio if required
-  flash900 /etc/serval/rfd900 /dev/ttyATH0 230400 >/dos/flash900.log 2>&1 
+    /etc/serval/boot_report OK "Reseting /etc/inittab to default"
+    if [ -e /overlay/etc/inittab ]; then
+	rm /overlay/etc/inittab
+	reboot
+    fi
+    /etc/serval/boot_report OK "/etc/inittab ok"
 
-  /etc/serval/runservald &
-  /etc/serval/runlbard &
-  /etc/serval/otaupdate &
+    # Start servald
+    /etc/serval/boot_report OK "Setting up SERVALINSTANCE_PATH"
+    export SERVALINSTANCE_PATH=/serval-var
+    mkdir -p $SERVALINSTANCE_PATH
+    mkdir -p /var/run/serval
+    mkdir -p $SERVALINSTANCE_PATH/log
+    cp /etc/serval/serval.conf $SERVALINSTANCE_PATH/
+
+    # Flash radio if required
+    /etc/serval/boot_report OK "Checking if RFD900 requires re-flashing"
+    flash900 /etc/serval/rfd900 /dev/ttyATH0 230400 >/dos/flash900.log 2>&1 
+
+    /etc/serval/boot_report OK "Starting servald, lbard and otaupdate"
+    /etc/serval/runservald &
+    /etc/serval/runlbard &
+    /etc/serval/otaupdate &
+
+    /etc/serval/boot_report OK "Finished S49servald"
 }
 
 stop() {
