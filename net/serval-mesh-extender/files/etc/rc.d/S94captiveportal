@@ -14,6 +14,8 @@ start() {
 # Get list of interface names and IP addresses
 list=`ifconfig | egrep "^[a-z]|inet addr:|inet " | sed -e 's/	/ /g' -e 's/inet addr:/inet:/g' -e 's/inet /inet:/g' -e 's/^ *inet:/IP:/g' -e 's/ .*$//g' -e 's/:$//g' | grep -v 127.0.0.1`
 
+# We really should figure out how to just not have these things be in the base image
+# to begin with.
 killall dnsmasq
 if [ -e /etc/rc.d/S35odhcpd ]; then
   rm /etc/rc.d/S35odhcpd ]

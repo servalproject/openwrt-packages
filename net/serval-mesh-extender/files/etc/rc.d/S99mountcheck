@@ -1,0 +1,24 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=99
+
+start() {
+
+    # Check if things that we mounted in S47 are still mounted.
+    # This is required because it seems that when the jffs finishes preparing
+    # for the first time, the mountpoints are removed, requiring us to normally
+    # need to reboot.
+    # So we have two choices here:
+    # 1. Reboot; or
+    # 2. Mount the partitions again.
+    mount > /tmp/mount99.log
+
+    before=`cat /tmp/mount47.log | grep serval | wc -l`
+    after=`cat /tmp/mount99.log | grep serval | wc -l`
+
+    if [ "x$before" != "x$after" ]; then
+       # For now, just notice the problem.  We'll implement action soon
+       echo "$before $after" > /tmp/mount_problem
+    fi
+}

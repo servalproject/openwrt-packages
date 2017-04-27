@@ -17,6 +17,12 @@ rm /etc/serval/servald.pid
 #
 while [ 1 ]
 do
-servald start
-sleep 3
+    # Copy our static config file to instance directory
+    cp /etc/serval/serval.conf /serval-var/serval.conf
+
+    # Run servald
+    servald start foreground
+
+    # Have a short delay before running again if it fails
+    sleep 3
 done
