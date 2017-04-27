@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20170428.1019.29
-PKG_RELEASE:=20
+PKG_VERSION:=START.20170428.1021.29
+PKG_RELEASE:=21
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -64,7 +64,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/serval/boot_index_bottom.html $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/boot_index_middle.html $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/boot_index_top.html $(1)/etc/serval
-	$(INSTALL_BIN) ./files/etc/serval/boot_reporti $(1)/etc/serval
+	$(INSTALL_BIN) ./files/etc/serval/boot_report $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/rfd900-43-91.ihx $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/rfd900-82-86.ihx $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/rfd900-82-91.ihx $(1)/etc/serval
