@@ -54,13 +54,33 @@ EOF
      fi
   fi
 
-  fsck -y ${dev}2
-  fsck -y ${dev}3
+  umount /dos
+  umount /serval
+  umount /serval-var
+
+  fsck.ext2 -y ${dev}2
+  fsck.ext2 -y ${dev}3
   dosfsck -y ${dev}1
   
+  umount /dos
   mount ${dev}1 /dos
+  if [ $? == 255 ]; then
+    echo "Reformatting /dos"
+    mkfs.vfat ${dev}1
+    mount ${dev}1 /dos
+  fi
   mount ${dev}2 /serval
+  if [ $? == 255 ]; then
+     echo "Reformatting /serval"
+     mkfs.ext2 ${dev}2
+    mount ${dev}2 /serval
+  fi
   mount ${dev}3 /serval-var
+  if [ $? == 255 ]; then
+    echo "Reformatting /serval-var"
+    mkfs.vfat ${dev}3
+    mount ${dev}3 /serval-var
+  fi
 
   dosmounted=`mount | grep /dos | wc -l`
 
