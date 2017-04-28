@@ -3,8 +3,8 @@
 #
 #  Upgrade servald if an upgrade is available.
 #
-[ -e /dos/serval.up ] && /etc/serval/upgrade /dos/serval.up >>/dos/upgrade.log
-[ -e /dos/SERVAL.UP ] && /etc/serval/upgrade /dos/SERVAL.UP >>/dos/upgrade.log
+# [ -e /dos/serval.up ] && /etc/serval/upgrade /dos/serval.up >>/dos/upgrade.log
+# [ -e /dos/SERVAL.UP ] && /etc/serval/upgrade /dos/SERVAL.UP >>/dos/upgrade.log
 
 #
 # Clear out old pid file
