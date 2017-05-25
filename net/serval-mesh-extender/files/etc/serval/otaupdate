@@ -42,7 +42,7 @@ fi
 
 # Generate list of updated conversations, and the offset to which we have read
 rm /tmp/updatedqsos
-servald meshms list conversations `servald id self | tail -1 | cut -f1 -d:` | awk -F: '{if ( $4 > $5 ) print $2;}' > /tmp/updatedqsos
+lbard meshms list conversations `servald id self | tail -1 | cut -f1 -d:` | awk -F: '{if ( $4 > $5 ) print $2;}' > /tmp/updatedqsos
 # Iterate through the list, and call the meshms responder to process new messages in each
 xargs -r sh /etc/serval/meshmsresponder < /tmp/updatedqsos
 
@@ -54,7 +54,7 @@ if [ -e /dos/helpdesk.sid ]; then
   helpdesksid=`cat /dos/helpdesk.sid`
   cat /serval/www/index-helpdesk-template.html | sed -e "s/HELPDESKSID/${helpdesksid}/g" -e "s/MESHEXTENDERIP/${apip}/g" >/serval/www/index-temp.html
 
-  servald meshms list messages `servald id self | tail -1` `cat /dos/helpdesk.sid` | awk -F: '{ if ($4 == "<" ) { print; } }' | grep "helpsay " | tail -10 | cut -f5- -d: >/serval-var/helpreplies.txt
+  lbard meshms list messages `servald id self | tail -1` `cat /dos/helpdesk.sid` | awk -F: '{ if ($4 == "<" ) { print; } }' | grep "helpsay " | tail -10 | cut -f5- -d: >/serval-var/helpreplies.txt
   msgs=`cat /serval-var/helpreplies.txt | wc -l`
   if [ "${msgs}" = "0" ]; then
       echo "<tr><td>NO MESSAGES FROM THE HELP DESK</td></tr>" >>/serval/www/index-temp.html
