@@ -7,7 +7,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=libsodium
+PKG_NAME:=libsodium1
 PKG_VERSION:=1.0.10
 PKG_RELEASE:=1
 
@@ -26,7 +26,7 @@ PKG_LICENSE:=ISC
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/libsodium
+define Package/libsodium1
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=P(ortable|ackageable) NaCl-based crypto library
@@ -34,7 +34,7 @@ define Package/libsodium
   MAINTAINER:=Damiano Renfer <damiano.renfer@gmail.com>
 endef
 
-define Package/libsodium/description
+define Package/libsodium1/description
   NaCl (pronounced "salt") is a new easy-to-use high-speed software library for network communication, encryption, decryption, signatures, etc.
   NaCl's goal is to provide all of the core operations needed to build higher-level cryptographic tools.
   Sodium is a portable, cross-compilable, installable, packageable fork of NaCl (based on the latest released upstream version nacl-20110221), with a compatible API.
@@ -42,19 +42,6 @@ define Package/libsodium/description
   The same cannot be said of NIST curves, where the specific origins of certain constants are not described by the standards.
   And despite the emphasis on higher security, primitives are faster across-the-board than most implementations of the NIST standards.
 endef
-
-define Package/libsodium/config
-menu "Configuration"
-	depends on PACKAGE_libsodium
-	config LIBSODIUM_MINIMAL
-		bool "Compile only what is required for the high-level API (no aes128ctr), should be fine in most cases."
-		default n
-endmenu
-endef
-
-CONFIGURE_ARGS+= \
-	--disable-ssp \
-	$(if $(CONFIG_LIBSODIUM_MINIMAL),--enable-minimal=yes,--enable-minimal=no)
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/sodium
@@ -66,9 +53,9 @@ define Build/InstallDev
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libsodium.pc $(1)/usr/lib/pkgconfig/
 endef
 
-define Package/libsodium/install
+define Package/libsodium1/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libsodium.so.* $(1)/usr/lib/
 endef
 
-$(eval $(call BuildPackage,libsodium))
+$(eval $(call BuildPackage,libsodium1))
