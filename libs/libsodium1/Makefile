@@ -43,6 +43,12 @@ define Package/libsodium1/description
   And despite the emphasis on higher security, primitives are faster across-the-board than most implementations of the NIST standards.
 endef
 
+define Build/Prepare
+        $(PKG_UNPACK)
+        # Rename libsodium-1.0.10 to libsodium1-1.0.10
+        ( cd $(PKG_BUILD_DIR) && mv ../libsodium-1.0.10/* . )
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/sodium
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/sodium.h $(1)/usr/include
