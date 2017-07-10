@@ -41,7 +41,7 @@ define Package/serval-dna/description
   Serval DNA daemon on OpenWRT.
 endef
 
-LD_DIR)/define Build/Configure
+define Build/Configure
 	echo "$(PKG_VERSION)" >$(PKG_BUILD_DIR)/$(CONFIGURE_PATH)/$(strip $(3))/VERSION.txt
 	sed -e 's/-Werror//g' -e 's/-Werror=format-security//g' -e 's/_FORTIFY_SOURCE//g' < $(PKG_BUILD_DIR)/Makefile.in > $(PKG_BUILD_DIR)/Makefile.out && mv $(PKG_BUILD_DIR)/Makefile.out $(PKG_BUILD_DIR)/Makefile.in
 	$(call Build/Configure/Default,$(1),$(2),$(3))
