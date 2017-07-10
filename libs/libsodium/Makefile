@@ -72,5 +72,3 @@ define Package/libsodium/install
 endef
 
 $(eval $(call BuildPackage,libsodium))
-Contact GitHub API Training Shop Blog About
-© 2017 GitHub, Inc. Terms Privacy Security Status Help
