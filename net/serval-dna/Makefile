@@ -44,7 +44,7 @@ endef
 define Build/Configure
 	echo "$(PKG_VERSION)" >$(PKG_BUILD_DIR)/$(CONFIGURE_PATH)/$(strip $(3))/VERSION.txt
 	$(call Build/Configure/Default,$(1),$(2),$(3))
-	sed -e 's/-Werror=format-security//g' -e 's/-Werror//g' -e 's/_FORTIFY_SOURCE//g' < $(PKG_BUILD_DIR)/Makefile > $(PKG_BUILD_DIR)/Makefile.out && mv $(PKG_BUILD_DIR)/Makefile.out $(PKG_BUILD_DIR)/Makefile
+	sed -e 's/-Werror=format-security//g' -e 's/-Werror//g' -e 's/-D_FORTIFY_SOURCE=[0-9]//g' < $(PKG_BUILD_DIR)/Makefile > $(PKG_BUILD_DIR)/Makefile.out && mv $(PKG_BUILD_DIR)/Makefile.out $(PKG_BUILD_DIR)/Makefile
 endef
 
 define Package/serval-dna/install
