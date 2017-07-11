@@ -20,23 +20,25 @@ if [ -z $currentversion ]; then
 fi
 echo "Bundleid = '$bundleid'"
 
-rhizomeversion=`servald rhizome list | grep -i ${bundleid} | cut -f4 -d:`
-if [ ! -z "$rhizomeversion" ]; then
-  if [ $rhizomeversion -gt $currentversion ]; then
-    # We have found a newer version
-    rm /dos/ota-update
-    servald rhizome extract file ${bundleid} /dos/ota-update
-    if [ -e /dos/ota-update ]; then
-      chmod 755 /dos/ota-update
+# Disable old ota update check, ready for replacing it with auto-detection via LBARD monitoring
+# of Rhizome stream.
+#rhizomeversion=`servald rhizome list | grep -i ${bundleid} | cut -f4 -d:`
+#if [ ! -z "$rhizomeversion" ]; then
+#  if [ $rhizomeversion -gt $currentversion ]; then
+#    # We have found a newer version
+#    rm /dos/ota-update
+#    servald rhizome extract file ${bundleid} /dos/ota-update
+#    if [ -e /dos/ota-update ]; then
+#      chmod 755 /dos/ota-update
 #      /dos/ota-update && echo "$rhizomeversion" > /serval/www/ota-update-version.html
-      # Create some nice diagnostic files so that we can work out what version of
-      # binaries we are using.
-      ls -l /serval > /serval/www/ota-update-result.html
-      servald help > /serval/www/servald.txt
-      strings /usr/bin/lbard > /serval/www/lbard.txt 
-    fi
-  fi
-fi
+#      # Create some nice diagnostic files so that we can work out what version of
+#      # binaries we are using.
+#      ls -l /serval > /serval/www/ota-update-result.html
+#      servald help > /serval/www/servald.txt
+#      strings /usr/bin/lbard > /serval/www/lbard.txt 
+#    fi
+#  fi
+#fi
 
 # Also check for new MeshMS messages, so that we can provide some simple services.
 
