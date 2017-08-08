@@ -1,4 +1,8 @@
-SSID="$(flash900 eeprom /dev/ttyATH0 directives get SSID)"
+#!/bin/sh
+keyValSSID="$(flash900 eeprom /dev/ttyATH0 directives get SSID)"
+SSID="${keyValSSID##*=}"
+
 if [ SSID ]; then
-  cat /etc/config/wireless.template | sed "s/public.servalproject.org/$SSID"
+  sed 's|public.servalproject.org|'`echo $SSID`'|' < /etc/config/wireless.template > /etc/config/wireless
+
 fi
