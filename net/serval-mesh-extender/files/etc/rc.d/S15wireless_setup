@@ -1,4 +1,5 @@
 #!/bin/sh
+echo test
 sed 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
 
 # The following will result in the mesh extender having a different MAC and IP on every boot.
