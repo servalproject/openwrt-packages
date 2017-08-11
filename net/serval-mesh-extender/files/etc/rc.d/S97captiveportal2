@@ -1,0 +1,2 @@
+#!/bin/sh
+sed -i 's|option enabled 0|option enabled 1|' /etc/config/nodogsplash
