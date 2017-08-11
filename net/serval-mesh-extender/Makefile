@@ -48,10 +48,12 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/inittab $(1)/etc
 	$(INSTALL_BIN) ./files/etc/profile $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/rc.d
+	$(INSTALL_BIN) ./files/etc/rc.d/S13pre_wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S15wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S47mountstuff $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S49servald $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S94captiveportal $(1)/etc/rc.d
+	$(INSTALL_BIN) ./files/etc/rc.d/S97captiveportal2 $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S99mountcheck $(1)/etc/rc.d
 	$(INSTALL_DIR) $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/manuallbard $(1)/etc/serval
