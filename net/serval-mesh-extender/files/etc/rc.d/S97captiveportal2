@@ -1,3 +1,4 @@
 #!/bin/sh
 sed -i 's|option enabled 0|option enabled 1|' /etc/config/nodogsplash
 sed -i 's|lan|public|' /etc/config/nodogsplash
+/etc/init.d/nodogsplash start
