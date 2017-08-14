@@ -2,3 +2,5 @@
 sed -i 's|option enabled 0|option enabled 1|' /etc/config/nodogsplash
 sed -i 's|lan|public|' /etc/config/nodogsplash
 /etc/init.d/nodogsplash start
+mv /etc/config/splash.html /etc/nodogsplash/htdocs/splash.html
+mv /etc/config/style.css /etc/nodogsplash/htdocs/images/style.css
