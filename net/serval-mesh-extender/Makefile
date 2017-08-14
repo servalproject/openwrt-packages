@@ -42,6 +42,8 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/config/system $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/uhttpd $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/wireless.template $(1)/etc/config
+	$(INSTALL_BIN) ./files/etc/config/splash.html $(1)/etc/config
+	$(INSTALL_BIN) ./files/etc/config/style.css $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/hotplug2.rules $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/etc/init.d/dropbear $(1)/etc/init.d
