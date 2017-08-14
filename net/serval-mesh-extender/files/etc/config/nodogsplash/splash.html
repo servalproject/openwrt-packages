@@ -15,10 +15,19 @@
                         dzqfzqdzq dzoqdh zqodzqdzqdzqdzqd
                 </div>
         </div>
-
+        <a id="linkAndroidVersion" href="#"></a>
+        <div id="androidVersion"></div>
         <div id="demo"></div>
 </body>
 <script>
+        var ua = navigator.userAgent;             
+        if(ua.indexOf("Android") >= 0)                   
+        {                                               
+                var regex = /Android\s+([\d\.]+)/;
+                var androidVersion = Math.floor(regex.exec(ua));     
+                document.getElementById("androidVersion").innerHTML = androidVersion;
+                document.getElementById("linkAndroidVersion").href = "$imagesdir/Android"+androidVersion+".html";
+        }           
         setTimeout(function(){
                 document.getElementById("demo").innerHTML = "Jaavascript Works!"
         },2000);
