@@ -4,6 +4,4 @@ SSID="${keyValSSID##*=}"
 
 if [ $SSID ]; then
   sed -i 's|public.servalproject.org|'`echo $SSID`'|' /etc/config/wireless.template
-else
-  sed -i 's|public.servalproject.org|'`echo public.servalproject.org.NW`'|' /etc/config/wireless.template
 fi
