@@ -1,3 +1,9 @@
 h1{
-  color: cyan;
+	color: cyan;
+}
+
+.instruction-pic, #back-to-main{
+	width: 65%;
+	display:block;
+	margin: 0 auto;
 }
