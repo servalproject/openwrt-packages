@@ -1,9 +1,10 @@
 h1{
 	color: cyan;
+	text-align: center;
 }
 
-.instruction-pic, #back-to-main{
+.instruction-pic, .width-button{
 	width: 65%;
 	display:block;
-	margin: 0 auto;
+	margin: 5% auto;
 }

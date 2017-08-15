@@ -10,3 +10,4 @@ mv /etc/config/Android5.html /etc/nodogsplash/htdocs/images/Android5.html
 mv /etc/config/Android7_1.jpg /etc/nodogsplash/htdocs/images/Android7_1.jpg
 mv /etc/config/Android7_2.jpg /etc/nodogsplash/htdocs/images/Android7_2.jpg
 mv /etc/config/Android7_3.jpg /etc/nodogsplash/htdocs/images/Android7_3.jpg
+mv /etc/config/ServalChat.apk /etc/nodogsplash/htdocs/images/ServalChat.apk
