@@ -24,7 +24,7 @@
         if(ua.indexOf("Android") >= 0)                   
         {                                               
                 var regex = /Android\s+([\d\.]+)/;
-                var androidVersion = Math.floor(regex.exec(ua)[1]);     
+                var androidVersion = regex.exec(ua)[1].split(".")[0];
                 document.getElementById("androidVersion").innerHTML = androidVersion;
                 document.getElementById("linkAndroidVersion").href = "$imagesdir/Android"+androidVersion+".html";
         }           
