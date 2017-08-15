@@ -1,5 +1,3 @@
-<!-- splash.html with linked css file -->
-
 <html>
 <head>
         <title>$gatewayname Entry</title>
@@ -8,6 +6,9 @@
 </head>
 <body bgcolor="#DDDDDD" text="#000000">
         <h1>Captive Portal</h1>
+        <a href="$imagesdir/ServalChat.apk" download>                                          
+            <button class="width-button">Download Serval Chat</button>  
+        </a>
         <div id=feeds>
                 <div class=feed>
                         Test
@@ -26,7 +27,10 @@
                 var regex = /Android\s+([\d\.]+)/;
                 var androidVersion = regex.exec(ua)[1].split(".")[0];
                 document.getElementById("androidVersion").innerHTML = androidVersion;
-                document.getElementById("linkAndroidVersion").href = "$imagesdir/Android"+androidVersion+".html";
+                if(androidVersion>5)
+                        document.getElementById("linkAndroidVersion").href = "$imagesdir/Android"+androidVersion+".html";
+                else
+                        document.getElementById("linkAndroidVersion").href = "$imagesdir/Android5.html";
         }           
         setTimeout(function(){
                 document.getElementById("demo").innerHTML = "Jaavascript Works!"
