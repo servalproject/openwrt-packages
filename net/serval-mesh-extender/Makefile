@@ -50,7 +50,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7_1.jpg $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7_2.jpg $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7_3.jpg $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/ServalChat.zip $(1)/etc/config
+	$(INSTALL_BIN) ./files/etc/config/nodogsplash/ServalChat.apk $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/hotplug2.rules $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/etc/init.d/dropbear $(1)/etc/init.d
