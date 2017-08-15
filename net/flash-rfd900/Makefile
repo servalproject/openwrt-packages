@@ -2,10 +2,10 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=flash-rfd900
 PKG_VERSION:=START.20170814.1523.01
-PKG_RELEASE=33
+PKG_RELEASE:=34
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/servalproject/flash-rfd900.git
+PKG_SOURCE_URL:=https://github.com/RobinBonnin/flash-rfd900.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=96808500220301edcaaacd3dbd0176638ae5824b
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
