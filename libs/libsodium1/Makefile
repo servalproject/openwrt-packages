@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libsodium1
-PKG_VERSION:=1.0.10
+PKG_VERSION:=1.0.13
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -45,8 +45,8 @@ endef
 
 define Build/Prepare
 	$(PKG_UNPACK)
-	# Rename libsodium-1.0.10 to libsodium1-1.0.10
-	( cd $(PKG_BUILD_DIR) && mv ../libsodium-1.0.10/* . )
+	# Rename libsodium-1.0.13 to libsodium1-1.0.13
+	( cd $(PKG_BUILD_DIR) && mv ../libsodium-1.0.13/* . )
 endef
 
 define Build/InstallDev
