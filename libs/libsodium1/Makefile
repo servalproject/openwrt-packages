@@ -13,7 +13,7 @@ PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=libsodium-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://download.libsodium.org/libsodium/releases
+PKG_SOURCE_URL:=https://download.libsodium.org/libsodium/releases/old
 PKG_MD5SUM:=ea89dcbbda0b2b6ff6a1c476231870dd
 PKG_CAT:=zcat
 
