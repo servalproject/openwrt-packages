@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libsodium1
 PKG_VERSION:=1.0.12
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=libsodium-$(PKG_VERSION).tar.gz
@@ -50,7 +50,7 @@ define Build/Prepare
 endef
 
 define Build/Configure
-  $(call Build/Configure/Default,--without-pthread)
+  $(call Build/Configure/Default,--without-pthreads)
 endef
 
 define Build/InstallDev
