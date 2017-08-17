@@ -45,8 +45,8 @@ endef
 
 define Build/Prepare
 	$(PKG_UNPACK)
-	# Rename libsodium-1.0.13 to libsodium1-1.0.13
-	( cd $(PKG_BUILD_DIR) && mv ../libsodium-1.0.13/* . )
+	# Rename libsodium-1.0.12 to libsodium1-1.0.12
+	( cd $(PKG_BUILD_DIR) && mv ../libsodium-1.0.12/* . )
 endef
 
 define Build/InstallDev
