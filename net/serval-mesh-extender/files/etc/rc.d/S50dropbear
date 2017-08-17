@@ -147,6 +147,7 @@ start()
 	config_load "${NAME}"
 	config_foreach dropbear_start dropbear
   echo S50: The SSH server is now ready > /dev/kmsg
+  echo S50: Now is it ? > /dev/kmsg
 }
 
 stop()
