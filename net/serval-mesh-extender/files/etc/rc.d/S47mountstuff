@@ -144,7 +144,6 @@ EOF
   echo S47: Now reading EEPROM settings > /dev/kmsg
   flash900 eeprom /dev/ttyATH0 directives list > /serval-var/eeprom.directives
   flash900 eeprom /dev/ttyATH0 dump > /serval-var/eeprom.dump 2>&1
-  echo S47: Now am I able to see this > /dev/kmsg
   otabid=`flash900 eeprom /dev/ttyATH0 directives get OTABID | cut -f2 -d=`
   yesroot=`flash900 eeprom /dev/ttyATH0 directives get YESROOT | cut -f2 -d=`
   noroot=`flash900 eeprom /dev/ttyATH0 directives get NOROOT | cut -f2 -d=`
@@ -164,7 +163,7 @@ EOF
   if [ "$xlines" == "x0" ]; then
       flash900 eeprom /dev/ttyATH0 directives list > /serval-var/eeprom.directives
   fi
-  echo S47: Settings from Radio EEPROM are read > /dev/kmsg
+  echo S47: Settings from EEPRON correctly read > /dev/kmsg
   /etc/serval/boot_report OK "Read Radio EEPROM settings (${lines} lines)"
 
 
