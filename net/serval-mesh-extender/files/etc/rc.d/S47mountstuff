@@ -164,6 +164,7 @@ EOF
       flash900 eeprom /dev/ttyATH0 directives list > /serval-var/eeprom.directives
   fi
   echo S47: Settings from EEPRON correctly read > /dev/kmsg
+  echo Another testing > /dev/kmsg
   /etc/serval/boot_report OK "Read Radio EEPROM settings (${lines} lines)"
 
 
