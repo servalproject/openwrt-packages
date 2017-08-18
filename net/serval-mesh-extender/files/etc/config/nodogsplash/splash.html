@@ -24,10 +24,13 @@
     </p>
     <p>
         Once it's done, click here to get the installation procedure:
-        <a id="linkAndroidVersion" href="#">Installation procedure</a>
+        <a id="linkAndroidVersion" href="#"> 
+            <button class="width-button">Installation procedure</button>
+        </a>      
+    </p>
     <p>
-    <div id="androidVersion"></div>
-    <div id="demo"></div>
+        Android version = <span id="androidVersion"></span>
+    </p>
 </body>
 <script>
         var ua = navigator.userAgent;             
@@ -41,8 +44,5 @@
                 else
                         document.getElementById("linkAndroidVersion").href = "$imagesdir/Android5.html";
         }           
-        setTimeout(function(){
-                document.getElementById("demo").innerHTML = "Jaavascript Works!"
-        },2000);
 </script>
 </html>

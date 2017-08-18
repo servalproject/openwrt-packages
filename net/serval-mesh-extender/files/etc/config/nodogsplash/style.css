@@ -8,3 +8,8 @@ h1{
 	display:block;
 	margin: 5% auto;
 }
+
+.width-button{
+        height: 10%;
+        font-size: 3vh;
+}
