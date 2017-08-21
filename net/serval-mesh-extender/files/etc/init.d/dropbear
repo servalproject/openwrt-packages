@@ -30,16 +30,19 @@ dropbear_start()
         echo "Remove this file to enable SSH login to the mesh extender as root:root." >/dos/noroot
         echo "This file is recreated on each reboot, so is effective for one boot only." >>/dos/noroot
     fi
-    /etc/serval/boot_report OK "Enabling SSH login"
+    /etc/serval/boot_report OK "Unlocking root password for SSH login"
     passwd -u root # unlock root if allowing dropbear
-    ( sleep 1; echo "root" ; sleep 1; echo "root" ) | passwd root
     if [ -e /dos/yesroot ]; then
         if [ ! -z /dos/yesroot ]; then
             # Set root password according to contents of yesroot file
-	    /etc/serval/boot_report OK "Setting root password"
+            passmd5=`cat /dos/yesroot | md5sum | cut -f1 -d" "`
+	    /etc/serval/boot_report OK "Setting root password from /dos/yesroot (MD5=$passmd5)"
             password=`cat /dos/yesroot | cut -c1-8`
             ( sleep 1; echo "${password}" ; sleep 1; echo "${password}" ) | passwd root
         fi 
+    else
+      /etc/serval/boot_report OK "Setting root password to default"
+      ( sleep 1; echo "root" ; sleep 1; echo "root" ) | passwd root
     fi
     
     append_ports()
@@ -68,7 +71,10 @@ dropbear_start()
     # check if section is enabled (default)
     local enabled
     config_get_bool enabled "${section}" enable 1
-    [ "${enabled}" -eq 0 ] && return 1
+    if [ "${enabled}" -eq 0 ]; then
+      /etc/serval/boot_report OK "Not starting SSH server (due to config ${section}=0)"
+      return 1
+    fi
     
     # verbose parameter
     local verbosed
@@ -111,6 +117,7 @@ dropbear_start()
     
     # execute program and return its exit code
     [ "${verbosed}" -ne 0 ] && echo "${initscript}: section ${section} starting ${PROG} ${args}"
+    /etc/serval/boot_report OK "Starting SSH server: ${PROG} ${args}"
     SERVICE_PID_FILE="$pid_file" service_start ${PROG} ${args}
 }
 
