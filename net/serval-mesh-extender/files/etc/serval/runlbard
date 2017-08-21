@@ -28,9 +28,16 @@ do
     fi
   fi
 
+  # If we have an OTA bundle ID, then tell LBARD to keep an eye on that bundle
+  if [ -e /dos/otabid ]; then
+    otabid=otabid=`cat /dos/otabid`
+  else
+    otabid=
+  fi 
+
   if [ ! -e /dos/nouhf ]; then
     # Run LBARD
-    lbard 127.0.0.1:4110 lbard:lbard `servald keyring list | tail -1 | cut -f1 -d:` `servald keyring list | tail -1 | cut -f2 -d:` /dev/ttyATH0 rebootwhenstuck timeslave udptime logrejects meshmsonly periodicrequests=/serval/lbard-restful.conf
+    lbard 127.0.0.1:4110 lbard:lbard `servald keyring list | tail -1 | cut -f1 -d:` `servald keyring list | tail -1 | cut -f2 -d:` /dev/ttyATH0 rebootwhenstuck timeslave udptime logrejects meshmsonly periodicrequests=/serval/lbard-restful.conf otadir=/serval $ota
     # If LBARD stops or dies, try reflashing the radio incase flashing it on boot failed.
     # (we have seen this happen once)
     flash900 /etc/serval/rfd900 /dev/ttyATH0 230400
