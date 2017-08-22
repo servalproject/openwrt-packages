@@ -11,6 +11,16 @@
 #
 rm /etc/serval/servald.pid
 
+
+#
+# Add entry to keyring file if none present
+#
+keyringcount=`servald keyring list | wc -l`
+if [[ $keyringcount < 2 ]]; then
+  servald keyring add
+fi
+
+
 #
 # run servald, and restart if it terminates for any reason
 # (it is experimental software, after all).
