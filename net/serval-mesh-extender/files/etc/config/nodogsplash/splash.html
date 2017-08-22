@@ -28,21 +28,37 @@
             <button class="width-button">Installation procedure</button>
         </a>      
     </p>
+    <div class="links">
+        <a id="linkDNAStatus" href="#"> 
+            <button class="width-button">Serval DNA Status</button>
+        </a> 
+        <a id="linkLBARDStatus" href="#"> 
+            <button class="width-button">Serval LBARD Status</button>
+        </a>      
+    </div>
     <p>
         Android version = <span id="androidVersion"></span>
     </p>
 </body>
 <script>
-        var ua = navigator.userAgent;             
-        if(ua.indexOf("Android") >= 0)                   
-        {                                               
-                var regex = /Android\s+([\d\.]+)/;
-                var androidVersion = regex.exec(ua)[1].split(".")[0];
-                document.getElementById("androidVersion").innerHTML = androidVersion;
-                if(androidVersion>5)
-                        document.getElementById("linkAndroidVersion").href = "$imagesdir/Android"+androidVersion+".html";
-                else
-                        document.getElementById("linkAndroidVersion").href = "$imagesdir/Android5.html";
-        }           
+    //Getting android version from the user Agent
+    var ua = navigator.userAgent;             
+    if(ua.indexOf("Android") >= 0)                   
+    {                                   
+        //Regex to get the android version            
+        var regex = /Android\s+([\d\.]+)/;
+        var androidVersion = regex.exec(ua)[1].split(".")[0];
+        document.getElementById("androidVersion").innerHTML = androidVersion;
+        if(androidVersion>5)
+            document.getElementById("linkAndroidVersion").href = "$imagesdir/Android"+androidVersion+".html";
+        else
+            document.getElementById("linkAndroidVersion").href = "$imagesdir/Android5.html";
+    }           
+
+    //DNA Status link
+    document.getElementById("linkDNAStatus").href = window.location.protocol + '//' + window.location.hostname + ':4110/';
+
+    //LBARD Status link
+    document.getElementById("linkLBARDStatus").href = window.location.protocol + '//' + window.location.hostname + ':21506/';
 </script>
 </html>
