@@ -42,17 +42,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/config/system $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/uhttpd $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/wireless.template $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/splash.html $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/style.css $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7.html $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android6.html $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android5.html $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7_1.jpg $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7_2.jpg $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7_3.jpg $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7_4.jpg $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/Android7_5.jpg $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/ServalChat.apk $(1)/etc/config
+	$(INSTALL_BIN) ./files/etc/config/nodogsplash/nodogsplash.tar $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/nodogsplash/configNodogsplash $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/hotplug2.rules $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/init.d
