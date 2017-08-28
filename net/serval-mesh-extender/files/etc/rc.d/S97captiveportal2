@@ -1,16 +1,14 @@
 #!/bin/sh
-#sed -i 's|option enabled 0|option enabled 1|' /etc/config/nodogsplash
-#sed -i 's|lan|public|' /etc/config/nodogsplash
 cat /etc/config/configNodogsplash > /etc/config/nodogsplash
 /etc/init.d/nodogsplash start
-mv /etc/config/splash.html /etc/nodogsplash/htdocs/splash.html
-mv /etc/config/style.css /etc/nodogsplash/htdocs/images/style.css
-mv /etc/config/Android7.html /etc/nodogsplash/htdocs/images/Android7.html
-mv /etc/config/Android6.html /etc/nodogsplash/htdocs/images/Android6.html
-mv /etc/config/Android5.html /etc/nodogsplash/htdocs/images/Android5.html
-mv /etc/config/Android7_1.jpg /etc/nodogsplash/htdocs/images/Android7_1.jpg
-mv /etc/config/Android7_2.jpg /etc/nodogsplash/htdocs/images/Android7_2.jpg
-mv /etc/config/Android7_3.jpg /etc/nodogsplash/htdocs/images/Android7_3.jpg
-mv /etc/config/Android7_4.jpg /etc/nodogsplash/htdocs/images/Android7_4.jpg
-mv /etc/config/Android7_5.jpg /etc/nodogsplash/htdocs/images/Android7_5.jpg
-mv /etc/config/ServalChat.apk /etc/nodogsplash/htdocs/images/ServalChat.apk
+mv /etc/config/splash.html /serval/www/splash.html
+mv /etc/config/style.css /serval/www/images/style.css
+mv /etc/config/Android7.html /serval/www/images/Android7.html
+mv /etc/config/Android6.html /serval/www/images/Android6.html
+mv /etc/config/Android5.html /serval/www/images/Android5.html
+mv /etc/config/Android7_1.jpg /serval/www/images/Android7_1.jpg
+mv /etc/config/Android7_2.jpg /serval/www/images/Android7_2.jpg
+mv /etc/config/Android7_3.jpg /serval/www/images/Android7_3.jpg
+mv /etc/config/Android7_4.jpg /serval/www/images/Android7_4.jpg
+mv /etc/config/Android7_5.jpg /serval/www/images/Android7_5.jpg
+mv /etc/config/ServalChat.apk /serval/www/images/ServalChat.apk

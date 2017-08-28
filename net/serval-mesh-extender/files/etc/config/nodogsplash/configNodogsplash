@@ -1,6 +1,7 @@
 config instance
   # Set to 1 to enable nodogsplash
   option enabled 1
+  option webroot '/serval/www/'
 
   # Use plain configuration file as well
   #option config '/etc/nodogsplash/nodogsplash.conf'
