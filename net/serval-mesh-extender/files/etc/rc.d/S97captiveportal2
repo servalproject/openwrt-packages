@@ -1,9 +1,9 @@
 #!/bin/sh
 cat /etc/config/configNodogsplash > /etc/config/nodogsplash
 /etc/init.d/nodogsplash start
+mv /etc/config/splash.html /serval/www/splash.html
 mv /etc/config/nodogsplash.tar /serval/www/nodogsplash.tar
-tar xf nodogsplash.tar
-#mv /etc/config/splash.html /serval/www/splash.html
+tar xf /serval/www/nodogsplash.tar
 #mv /etc/config/style.css /serval/www/images/style.css
 #mv /etc/config/Android7.html /serval/www/images/Android7.html
 #mv /etc/config/Android6.html /serval/www/images/Android6.html
