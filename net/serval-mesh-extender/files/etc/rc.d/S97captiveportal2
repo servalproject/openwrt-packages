@@ -1,16 +1,5 @@
 #!/bin/sh
 cat /etc/config/configNodogsplash > /etc/config/nodogsplash
 /etc/init.d/nodogsplash start
-#mv /etc/config/splash.html /serval/www/splash.html
-#mv /etc/config/nodogsplash.tar /serval/www/nodogsplash.tar
-tar xf /serval/www/nodogsplash.tar
-#mv /etc/config/style.css /serval/www/images/style.css
-#mv /etc/config/Android7.html /serval/www/images/Android7.html
-#mv /etc/config/Android6.html /serval/www/images/Android6.html
-#mv /etc/config/Android5.html /serval/www/images/Android5.html
-#mv /etc/config/Android7_1.jpg /serval/www/images/Android7_1.jpg
-#mv /etc/config/Android7_2.jpg /serval/www/images/Android7_2.jpg
-#mv /etc/config/Android7_3.jpg /serval/www/images/Android7_3.jpg
-#mv /etc/config/Android7_4.jpg /serval/www/images/Android7_4.jpg
-#mv /etc/config/Android7_5.jpg /serval/www/images/Android7_5.jpg
-#mv /etc/config/ServalChat.apk /serval/www/images/ServalChat.apk
+cd /serval/www/
+tar xf nodogsplash.tar
