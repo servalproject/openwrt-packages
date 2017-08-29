@@ -172,7 +172,7 @@ int main(int argc,char **argv)
 	    fprintf(stderr,">>> done_on_reset=%d in uboot banner check\n",done_on_reset);
 	    if (done_on_reset) {
 	      // Tell user we are done
-	      system("xclock");
+	      system("vlc alert.m3u");
 	      done_on_reset=0;
 	      ignore_uboot=1;
 	      fprintf(stderr,">>> Asserting ignore_uboot=1 in uboot banner check\n");
@@ -206,7 +206,7 @@ int main(int argc,char **argv)
 	  write(fd,"reset\r",6);
 	  if (done_on_reset) {
 	    // Tell user we are done
-	    system("xclock");
+	    system("vlc alert.m3u");
 	    done_on_reset=0;
 	    ignore_uboot=1;
 	    fprintf(stderr,">>> Asserting ignore_uboot=1 in uboot banner check\n");
