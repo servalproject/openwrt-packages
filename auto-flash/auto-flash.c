@@ -197,6 +197,14 @@ int main(int argc,char **argv)
 	    fprintf(stderr,">>> Clearing ignore_uboot=0 in uboot interrupt sequence\n");
 	  }
 	}
+	if (!strcmp(line,"*        U-Boot 1.1.4  (Jun  6 2015)        *")) {
+	  // old uboot -- always interrupt and reflash
+	  usleep(100000);
+	  write(fd," ",1);
+	  usleep(3000000); // time for linux box to get ethernet up
+	  write(fd,"run lu\r",7);
+	  fprintf(stderr,">>> Upgrading uboot\n");
+	}
 	if (!strcmp(line,"uboot> ")) {
 	  fprintf(stderr,">>> Sending reboot command\n");
 	  //	  write(fd,"\025reset\r",7);
