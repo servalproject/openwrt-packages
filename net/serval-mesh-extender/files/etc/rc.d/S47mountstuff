@@ -13,10 +13,25 @@ start() {
   if [ -e /dev/mmcblk0 ]; then
      # Bulk storage on SPI microSD
      dev=/dev/mmcblk0p
-     if [ ! -e /dev/mmcblk0p4 ]; then
+     fdiskdev=/dev/mmcblk0
+  else
+     /etc/serval/boot_report WARN "No microSD card present"    
+     if [ -e /dev/sda ]; then
+        # Bulk storage on USB memory stick
+        dev=/dev/sda
+        fdiskdev=/dev/sda
+     else
+        # XXX - No bulk storage -- work out what to do.
+        # We are now using microSD instead of USB, so our remedial options are different
+	 /etc/serval/boot_report WARN "No USB or microSD card.  Mesh Extender will not store or relay communications."
+        exit
+     fi
+  fi
+
+  if [ ! -e ${dev}4 ]; then
 	 # microSD card is not partitioned, so prepare it
-	     /etc/serval/boot_report WARN "microSD card not partitioned -- running fdisk"    
-       fdisk /dev/mmcblk0 <<EOF
+	     /etc/serval/boot_report WARN "Bulk storage (${fdiskdev}) not partitioned -- running fdisk"    
+       fdisk $fdiskdev <<EOF
 d
 1
 d
@@ -48,26 +63,16 @@ p
 t
 1
 c
+t
+4
+82
 w
 EOF
-	mkfs.vfat /dev/mmcblk0p1
-	mkfs.ext4 /dev/mmcblk0p2
-	mkfs.ext4 /dev/mmcblk0p3
+	mkfs.vfat ${dev}1
+	mkfs.ext4 ${dev}2
+	mkfs.ext4 ${dev}3
+        mkswap ${dev}4
 
-     fi
-  else
-      /etc/serval/boot_report WARN "No microSD card present"    
-
-      if [  -e /dev/sda1 ]; then
-          # Bulk storage on USB
-	  /etc/serval/boot_report OK "Found USB bulk storage"    
-
-        dev=/dev/sda
-     else
-        # XXX - No bulk storage -- work out what to do.
-        # We are now using microSD instead of USB, so our remedial options are different
-	 /etc/serval/boot_report WARN "No USB or microSD card.  This is not recommended, and may rapidly wear out the flash storage of your Mesh Extender"
-        exit
      fi
   fi
 
