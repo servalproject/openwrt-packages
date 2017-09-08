@@ -13,7 +13,7 @@ start() {
   if [ -e /dev/mmcblk0 ]; then
      # Bulk storage on SPI microSD
      dev=/dev/mmcblk0p
-     if [ ! -e /dev/mmcblk0p3 ]; then
+     if [ ! -e /dev/mmcblk0p4 ]; then
 	 # microSD card is not partitioned, so prepare it
 	     /etc/serval/boot_report WARN "microSD card not partitioned -- running fdisk"    
        fdisk /dev/mmcblk0 <<EOF
@@ -33,6 +33,11 @@ p
 n
 p
 2
+
++1G
+n
+p
+4
 
 +1G
 n
