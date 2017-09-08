@@ -28,6 +28,12 @@ start() {
     /etc/serval/boot_report OK "Checking if RFD900 requires re-flashing"
     flash900 /etc/serval/rfd900 /dev/ttyATH0 230400 >/dos/flash900.log 2>&1 
 
+    # Add identity to keyrnig file if none there yet
+    lines=`servald keyring list | wc -l`
+    if [ $lines == 2 ]; then
+        servald keyring Add
+    fi
+
     /etc/serval/boot_report OK "Starting servald, lbard and otaupdate"
     /etc/serval/runservald &
     /etc/serval/runlbard &
