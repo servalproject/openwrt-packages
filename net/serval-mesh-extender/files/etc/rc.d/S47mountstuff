@@ -72,9 +72,10 @@ EOF
 	mkfs.ext4 ${dev}2
 	mkfs.ext4 ${dev}3
         mkswap ${dev}4
-
-     fi
   fi
+
+  /etc/serval/boot_report OK "Enabling swap"
+  swaponoff ${dev}4
 
   /etc/serval/boot_report OK "Making sure bulk storage unmounted"
   umount /dos
