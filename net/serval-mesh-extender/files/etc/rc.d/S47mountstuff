@@ -75,7 +75,15 @@ EOF
   fi
 
   /etc/serval/boot_report OK "Enabling swap"
-  swaponoff ${dev}4
+  swapon ${dev}4
+  swapcount=`cat /proc/swaps | wc -l`
+  swapcount=$((swapcount - 1))
+  if [ $swapcount = 0 ]; then
+    /etc/serval/boot_report ERROR "Swap could not be enabled. Mesh Extender will be unstable"
+  else
+    msg=`tail -1 /proc/swaps | sed -e 's/\t/ /g' -e 's/  //g'`
+    /etc/serval/boot_report OK "Swap enabled using $msg"
+  fi
 
   /etc/serval/boot_report OK "Making sure bulk storage unmounted"
   umount /dos
