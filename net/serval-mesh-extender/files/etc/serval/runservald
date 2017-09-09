@@ -20,6 +20,12 @@ if [[ $keyringcount < 2 ]]; then
   servald keyring add
 fi
 
+#
+# Fix firewall config
+# 
+cp /etc/serval/firewall /etc/config/firewall
+/etc/init.d/firewall stop
+/etc/init.d/firewall start
 
 #
 # run servald, and restart if it terminates for any reason
