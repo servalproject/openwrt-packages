@@ -164,6 +164,11 @@ config rule
 	option proto		udp
 	option target		ACCEPT
 
+config rule
+	option dest_port	4110
+	option proto		tcp
+	option target		ACCEPT
+
 ### FULL CONFIG SECTIONS
 #config rule
 #	option src		lan
