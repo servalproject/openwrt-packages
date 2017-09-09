@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20170909.1528.49
-PKG_RELEASE:=41
+PKG_VERSION:=START.20170909.1530.49
+PKG_RELEASE:=42
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -57,7 +57,6 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/rc.d/S94captiveportal $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S97captiveportal2 $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S99mountcheck $(1)/etc/rc.d
-	$(INSTALL_DIR) $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/manuallbard $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/meshmsresponder $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/ota-bundleid.txt $(1)/etc/serval
