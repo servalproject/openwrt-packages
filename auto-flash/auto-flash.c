@@ -138,17 +138,22 @@ int main(int argc,char **argv)
     exit(3);
   }
 
+  fprintf(stderr,"Opening serial port...\n");
+  
   int fd=open(argv[1],O_RDWR);
   if (fd==-1) {
     fprintf(stderr,"Could not open serial port '%s'\n",argv[1]);
     exit(-1);
   }
+  fprintf(stderr,"Setting serial port speed...\n");
   if (setup_serial_port(fd,115200)) {
     fprintf(stderr,"Could not setup serial port '%s'\n",argv[1]);
     exit(-1);
   }
 
   long long last_time=gettime_ms();
+  
+  fprintf(stderr,"Ready and waiting...\n");
   
   while(1) {
     int c=next_char(fd);
