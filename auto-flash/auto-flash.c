@@ -140,7 +140,7 @@ int main(int argc,char **argv)
 
   fprintf(stderr,"Opening serial port...\n");
   
-  int fd=open(argv[1],O_RDWR);
+  int fd=open(argv[1],O_RDWR|O_NONBLOCK);
   if (fd==-1) {
     fprintf(stderr,"Could not open serial port '%s'\n",argv[1]);
     exit(-1);
