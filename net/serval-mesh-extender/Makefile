@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
 PKG_VERSION:=START.20170811.1358.49
-PKG_RELEASE:=35
+PKG_RELEASE:=36
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -76,6 +76,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/mesh-extender/upgrade $(1)/mesh-extender
 	$(INSTALL_DIR) $(1)/serval
 	$(INSTALL_BIN) ./files/serval/MeshExtender $(1)/serval
+	$(INSTALL_BIN) ./files/etc/serval/lbard-restful.conf $(1)/serval
 	$(INSTALL_DIR) $(1)/serval/www
 	$(INSTALL_BIN) ./files/serval/www/index.html $(1)/serval/www
 	$(INSTALL_BIN) ./files/etc/config/nodogsplash/nodogsplash.tar $(1)/serval/www
