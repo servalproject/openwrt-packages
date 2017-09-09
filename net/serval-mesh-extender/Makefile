@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20170909.1530.49
-PKG_RELEASE:=42
+PKG_VERSION:=START.20170909.1553.49
+PKG_RELEASE:=43
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -35,6 +35,7 @@ endef
 define Package/serval-mesh-extender/install
 	$(INSTALL_DIR) $(1)/etc
 	$(INSTALL_DIR) $(1)/dos
+	$(INSTALL_DIR) $(1)/etc/serval
 	$(INSTALL_BIN) ./files/dos/MeshExtender $(1)/dos
 	$(INSTALL_BIN) ./files/etc/banner.meshextender $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/config
