@@ -4,41 +4,64 @@
     <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
     <link href="$imagesdir/style.css" type="text/css" rel="stylesheet"></link>
 </head>
-<body bgcolor="#DDDDDD" text="#000000">
-    <h1>Captive Portal</h1>
-
-    <div id=feeds>
-        FEEDS
-        <div class=feed>
-            Test
-            10/05/95
-            dzqfzqdzq dzoqdh zqodzqdzqdzqdzqd
+<body>
+    <div id="flags">
+        <div class="flag">
+            <a href="$imagesdir/splash_bislama.html">
+                <img src="$imagesdir/flag_vanuatu.png"/>
+            </a>
+        </div>
+        <div class="flag">
+            <a href="$imagesdir/splash_french.html">
+                <img src="$imagesdir/flag_france.png"/>
+            </a>
+        </div>
+        <div class="flag">
+            <a href="$imagesdir/splash.html">
+                <img src="$imagesdir/flag_england.png"/>
+            </a>
+        </div>
+    </div>
+    <div id="header">
+        <img src="$imagesdir/serval_logo.png"/ id="logo">
+        <h1>Welcome to this Serval Mesh Extender</h1>
+        <div id="description">
+            <p>
+                This is an experimental device that can help you communicate with people nearby, even if there is no cellular signal.  To use this service, you, and the people you want to communicate with, need to install the Serval Mesh application. You can do this by following the instructions on this page.
+            </p>
+            <p>
+                Because it is still experimental, and because it relies on the little Serval Mesh Extender devices, it doesn't work the same as a cellular network.  Your messages to other people might take minutes or hours to be delivered -- or might not be delivered at all if there is no way for this to happen. However, it tries very hard to deliver by any means possible.
+            </p>
         </div>
     </div>
 
-    <p>
-        To install the Serval Mesh Android app, please copy-paste this link in Google Chrome:
-    </p>
-    <p>
-        http://servalmesh.au
-    </p>
-    <p>
-        Once it's done, click here to get the installation procedure:
-        <a id="linkAndroidVersion" href="#"> 
-            <button class="width-button">Installation procedure</button>
-        </a>      
-    </p>
-    <div class="links">
-        <a id="linkDNAStatus" href="#"> 
-            <button class="width-button">Serval DNA Status</button>
-        </a> 
-        <a id="linkLBARDStatus" href="#"> 
-            <button class="width-button">Serval LBARD Status</button>
-        </a>      
+    <div id="content">
+        <p>
+            To install the Serval Mesh Android app, please copy-paste this link in Google Chrome:
+        </p>
+        <p>
+            http://servalmesh.au
+        </p>
+        <p>
+            Once it's done, click here to get the installation procedure:
+            <a id="linkAndroidVersion" href="#"> 
+                <button class="width-button">Installation procedure</button>
+            </a>      
+        </p>
+        <div class="links">
+            <a id="linkDNAStatus" href="#"> 
+                <button class="width-button">Serval DNA Status</button>
+            </a> 
+            <a id="linkLBARDStatus" href="#"> 
+                <button class="width-button">Serval LBARD Status</button>
+            </a>      
+        </div>
     </div>
-    <p>
-        Android version = <span id="androidVersion"></span>
-    </p>
+    <div id="footer">
+        <p>
+            If you have any questions about this system, please SMS to +678 7711139 or send email to paul.gardner-stephen@flinders.edu.au.      
+        </p>
+    </div>
 </body>
 <script>
     //Getting android version from the user Agent
@@ -48,7 +71,7 @@
         //Regex to get the android version            
         var regex = /Android\s+([\d\.]+)/;
         var androidVersion = regex.exec(ua)[1].split(".")[0];
-        document.getElementById("androidVersion").innerHTML = androidVersion;
+        // document.getElementById("androidVersion").innerHTML = androidVersion;
         if(androidVersion>5)
             document.getElementById("linkAndroidVersion").href = "$imagesdir/Android"+androidVersion+".html";
         else
