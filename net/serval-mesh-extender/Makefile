@@ -29,6 +29,7 @@ define Package/conffiles
 endef
 
 define Build/Compile
+	( cd captiveportal ; tar zcvf ../servalwww.tgz )
 endef
 
 define Package/serval-mesh-extender/install
@@ -78,9 +79,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/serval/MeshExtender $(1)/serval
 	$(INSTALL_BIN) ./files/etc/serval/lbard-restful.conf $(1)/serval
 	$(INSTALL_DIR) $(1)/serval/www
-	$(INSTALL_BIN) ./files/serval/www/index.html $(1)/serval/www
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/nodogsplash.tar $(1)/serval/www
-	$(INSTALL_BIN) ./files/etc/config/nodogsplash/splash.html $(1)/serval/www
+	$(INSTALL_BIN) servalwww.tgz $(1)/etc/serval
 	$(INSTALL_DIR) $(1)/serval-var
 	$(INSTALL_BIN) ./files/serval-var/MeshExtender $(1)/serval-var
 endef

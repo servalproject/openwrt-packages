@@ -1,5 +1,13 @@
 #!/bin/sh
-cat /etc/config/configNodogsplash > /etc/config/nodogsplash
-/etc/init.d/nodogsplash start
+
+# Replace the config file that is part of the nodogsplash OpenWRT
+# package with the serval version
+cat /etc/serval/nodogsplash.conf > /etc/config/nodogsplash
+
+# Un-tar the serval web pages
+mkdir -p /serval/www/
 cd /serval/www/
-tar xf nodogsplash.tar
+tar zxf /etc/serval/servalwww.tgz
+
+# Start the captive portal
+/etc/init.d/nodogsplash start
