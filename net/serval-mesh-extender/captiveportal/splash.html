@@ -56,6 +56,22 @@
                 <button class="width-button">Serval LBARD Status</button>
             </a>      
         </div>
+        <div id="debugNei">
+        </div>
+        <div id="neighbours">
+            <h2>Neighbours list:</h2>
+            <lu id="neighbours-list">
+                <li class="neighbour">
+                    avfxbde94efs65
+                </li>
+                <li class="neighbour">
+                    fzaqd4z5zfa6fz
+                </li>
+                <li class="neighbour">
+                    grhtrde4gefes8
+                </li>
+            </lu>
+        </div>
     </div>
     <div id="footer">
         <p>
@@ -64,6 +80,25 @@
     </div>
 </body>
 <script>
+    //Getting the neighbours list
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", window.location.protocol + '//' + window.location.hostname + ':21506/status.json', false);
+    // xhttp.open("GET", "http://localhost:4110/restful/meshmb/1/messagelist.json", lbard, lbard);
+    // xhttp.withCredentials = true;
+    // xhttp.setRequestHeader("Authorization", 'Basic ' + btoa('lbard:lbard'));
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send();
+    var responseNeighbours = JSON.parse(xhttp.responseText);
+    document.getElementById("debugNei").innerHTML = responseNeighbours;
+
+    //insert in html
+    var neighboursList = document.getElementById("neighbours-list")[0];
+    for(var i=0; i<responseNeighbours.length; i++){
+        var li = document.createElement("li");
+        li.innerHTML = responseNeighbours[i]["id"] + ': ' + responseNeighbours[i]["last-time"]+'s';
+        neighboursList.appendChild(li);
+    }
+
     //Getting android version from the user Agent
     var ua = navigator.userAgent;             
     if(ua.indexOf("Android") >= 0)                   
