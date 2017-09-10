@@ -46,7 +46,7 @@ body{
 	border-bottom: 1px solid;	
 }
 
-#content #neighbours{
+#content #neighbours, #content #transfers{
 	border-top: 1px solid;
     padding: 5%;
 }
@@ -69,4 +69,10 @@ body{
 #content .width-button{
     height: 7%;
     font-size: 2.8vh;
+}
+
+#content #links{
+	padding: 3%;
+	text-align: center;	
+	border-top: 1px solid;
 }

@@ -48,30 +48,26 @@
                 <button class="width-button">Installation procedure</button>
             </a>      
         </p>
-        <div class="links">
-            <a id="linkDNAStatus" href="#"> 
-                <button class="width-button">Serval DNA Status</button>
-            </a> 
-            <a id="linkLBARDStatus" href="#"> 
-                <button class="width-button">Serval LBARD Status</button>
-            </a>      
-        </div>
-        <div id="debugNei">
-        </div>
+
         <div id="neighbours">
-            <h2>Neighbours list:</h2>
+            <h2>Mesh Extenders in range:</h2>
             <lu id="neighbours-list">
-                <li class="neighbour">
-                    avfxbde94efs65
-                </li>
-                <li class="neighbour">
-                    fzaqd4z5zfa6fz
-                </li>
-                <li class="neighbour">
-                    grhtrde4gefes8
-                </li>
             </lu>
         </div>
+        <div id="transfers">
+            <h2>Transfers list:</h2>
+            <lu id="transfers-list">
+            </lu>
+        </div>
+        <div id="links">
+            <a id="linkDNAStatus" href="#"> 
+                Diagnostic
+            </a> 
+            <!-- <a id="linkLBARDStatus" href="#"> 
+                <button class="width-button">Serval LBARD Status</button>
+            </a>  -->      
+        </div>
+        
     </div>
     <div id="footer">
         <p>
@@ -81,23 +77,55 @@
 </body>
 <script>
     //Getting the neighbours list
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", window.location.protocol + '//' + window.location.hostname + ':21506/status.json', false);
-    // xhttp.open("GET", "http://localhost:4110/restful/meshmb/1/messagelist.json", lbard, lbard);
-    // xhttp.withCredentials = true;
-    // xhttp.setRequestHeader("Authorization", 'Basic ' + btoa('lbard:lbard'));
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send();
-    var responseNeighbours = JSON.parse(xhttp.responseText);
-    document.getElementById("debugNei").innerHTML = responseNeighbours;
+    window.setInterval(function(){          
+        var neighboursList = document.getElementById("neighbours-list");
+        var transfersList = document.getElementById("transfers-list");  
 
-    //insert in html
-    var neighboursList = document.getElementById("neighbours-list")[0];
-    for(var i=0; i<responseNeighbours.length; i++){
-        var li = document.createElement("li");
-        li.innerHTML = responseNeighbours[i]["id"] + ': ' + responseNeighbours[i]["last-time"]+'s';
-        neighboursList.appendChild(li);
-    }
+        //Removing every previous children from the list
+        while(neighboursList.firstChild){
+            neighboursList.removeChild(neighboursList.firstChild);
+        }
+
+        while(transfersList.firstChild){
+            transfersList.removeChild(transfersList.firstChild);
+        }
+
+        //Fetch the json file
+        window.fetch( window.location.protocol + '//' + window.location.hostname + ':21506/status.json')
+        .then(res => res.json())
+        .then(resJson => {
+            console.log(resJson);
+            var responseNeighbours = resJson["neighbours"];
+
+            var responseTransfers = resJson["transfers"];
+
+            //insert in html
+            var neighboursList = document.getElementById("neighbours-list");
+            for(var i=0; i<responseNeighbours.length; i++){
+                var li = document.createElement("li");
+                var lastTime = responseNeighbours[i]["time-since-last"];
+                if(lastTime <= 3)
+                    li.style.color = 'green';
+                else{
+                    if(lastTime <= 10)
+                        li.style.color = 'orange';
+                    else
+                        li.style.color = 'red';
+                }
+
+                li.innerHTML = responseNeighbours[i]["id"] + ': ' + responseNeighbours[i]["time-since-last"]+'s';
+                neighboursList.appendChild(li);
+            }
+
+            var transfersList = document.getElementById("transfers-list");
+            for(i=0; i<responseTransfers.length; i++){
+                var li = document.createElement("li");
+                li.innerHTML = responseTransfers[i]["id"]+ ': ' + responseTransfers[i]["version"] + ': ' + responseTransfers[i]["progress"];
+                transfersList.appendChild(li);
+            }
+        })
+        .catch(err => console.log(err));
+    }, 5000); 
 
     //Getting android version from the user Agent
     var ua = navigator.userAgent;             
@@ -117,6 +145,6 @@
     document.getElementById("linkDNAStatus").href = window.location.protocol + '//' + window.location.hostname + ':4110/';
 
     //LBARD Status link
-    document.getElementById("linkLBARDStatus").href = window.location.protocol + '//' + window.location.hostname + ':21506/';
+    // document.getElementById("linkLBARDStatus").href = window.location.protocol + '//' + window.location.hostname + ':21506/';
 </script>
 </html>
