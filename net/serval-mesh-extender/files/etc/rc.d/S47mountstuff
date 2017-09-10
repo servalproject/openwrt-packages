@@ -5,6 +5,9 @@ START=47
 
 start() {
 
+    # Disable firewall as it is currently wrongly configured
+    /etc/init.d/firewall stop
+
     # Start httpd for tracking boot progress
     mkdir /tmp/www
     httpd -h /tmp/www
