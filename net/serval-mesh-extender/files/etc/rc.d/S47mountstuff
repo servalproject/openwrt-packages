@@ -10,7 +10,7 @@ start() {
 
     # Start httpd for tracking boot progress
     mkdir /tmp/www
-    httpd -h /tmp/www
+#    httpd -h /tmp/www
     /etc/serval/boot_report OK "Entering S47mountstuff"    
     
   if [ -e /dev/mmcblk0 ]; then
