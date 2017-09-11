@@ -1,7 +1,7 @@
 <html>
 <head>
-    <title>$gatewayname Entry</title>
-    <meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <title>Serval Mesh Extender</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <link href="style.css" type="text/css" rel="stylesheet"></link>
 </head>
 <body>
@@ -128,7 +128,7 @@
     }, 5000); 
 
     //Getting android version from the user Agent
-    var ua = navigator.userAgent;             
+    /*var ua = navigator.userAgent;             
     if(ua.indexOf("Android") >= 0)                   
     {                                   
         //Regex to get the android version            
@@ -139,7 +139,9 @@
             document.getElementById("linkAndroidVersion").href = "$imagesdir/Android"+androidVersion+".html";
         else
             document.getElementById("linkAndroidVersion").href = "$imagesdir/Android5.html";
-    }           
+    }*/
+    document.getElementById("linkAndroidVersion").href = "$imagesdir/Android7_french.html";
+           
 
     //DNA Status link
     document.getElementById("linkDNAStatus").href = window.location.protocol + '//' + window.location.hostname + ':4110/';
