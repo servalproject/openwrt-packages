@@ -37,15 +37,7 @@ do
 
   if [ ! -e /dos/nouhf ]; then
     # Run LBARD
-<<<<<<< HEAD
-<<<<<<< HEAD
     lbard 127.0.0.1:4110 lbard:lbard `servald keyring list | tail -1 | cut -f1 -d:` `servald keyring list | tail -1 | cut -f2 -d:` /dev/ttyATH0 rebootwhenstuck timeslave udptime logrejects meshmsonly otadir=/serval $ota # periodicrequests=/etc/serval/lbard-restful.conf 
-=======
-    lbard 127.0.0.1:4110 lbard:lbard `servald keyring list | tail -1 | cut -f1 -d:` `servald keyring list | tail -1 | cut -f2 -d:` /dev/ttyATH0 rebootwhenstuck timeslave udptime logrejects meshmsonly periodicrequests=/serval/lbard-restful.conf
->>>>>>> bcb2c05... [modified] lastcommit on branch
-=======
-    lbard 127.0.0.1:4110 lbard:lbard `servald keyring list | tail -1 | cut -f1 -d:` `servald keyring list | tail -1 | cut -f2 -d:` /dev/ttyATH0 rebootwhenstuck timeslave udptime logrejects meshmsonly periodicrequests=/serval/lbard-restful.conf
->>>>>>> bcb2c05f6a09d23580d170161cc654fc36958d69
     # If LBARD stops or dies, try reflashing the radio incase flashing it on boot failed.
     # (we have seen this happen once)
     flash900 /etc/serval/rfd900 /dev/ttyATH0
