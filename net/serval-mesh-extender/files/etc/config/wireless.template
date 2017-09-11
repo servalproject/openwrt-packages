@@ -32,7 +32,7 @@ config wifi-iface public
 config wifi-iface public1                     
 	option ifname     wlan1
         option device     radio0
-        option network    public              
+        option network    public1
         option mode       ap                  
         option isolate    0                   
         option ssid       mesh-extender
