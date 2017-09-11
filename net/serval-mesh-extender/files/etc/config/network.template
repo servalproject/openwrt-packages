@@ -23,7 +23,7 @@ config interface public
 	option netmask	'255.255.255.0'
 	option macaddr	'82:APETHER'
 
-config interface public
+config interface public1
 	option 'ifname'	'wlan1'
 	option proto 	static
 	option ipaddr	'192.168.3.1'
