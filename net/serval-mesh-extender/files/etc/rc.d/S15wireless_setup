@@ -1,5 +1,7 @@
 #!/bin/sh
-sed 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
+
+SIDPREFIX=`servald keyring list | tail -1 | cut -c1-12`
+sed -e 's/mesh-extender/'MeshExtender-"$SIDPREFIX"'/g' -e 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
 
 # The following will result in the mesh extender having a different MAC and IP on every boot.
 # While this may be inconvenient in some ways, it also ensures that over multiple reboots that no
