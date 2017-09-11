@@ -1,14 +1,5 @@
 #!/bin/sh
 
-mount -o ro /dev/sda3 /serval-var || mount -o ro /dev/mmcblk0p3 /serval-var
-keyringcount=`servald keyring list | wc -l`
-if [[ $keyringcount < 2 ]]; then
-  servald keyring add
-fi
-SIDPREFIX=`servald keyring list | tail -1 | cut -c1-12`
-sed -e 's/mesh-extender/'MeshExtender-"$SIDPREFIX"'/g' -e 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
-umount /serval-var
-
 # The following will result in the mesh extender having a different MAC and IP on every boot.
 # While this may be inconvenient in some ways, it also ensures that over multiple reboots that no
 # IP/MAC colissions should persist between nearby mesh extenders.  Drat that Birthday Paradox.

@@ -152,6 +152,16 @@ EOF
      fi
   fi
 
+  # Rename wireless interfaces based on SID of mesh extender
+  keyringcount=`servald keyring list | wc -l`
+  if [[ $keyringcount < 2 ]]; then
+    servald keyring add
+  fi
+  SIDPREFIX=`servald keyring list | tail -1 | cut -c1-12`
+  sed -e 's/mesh-extender/'MeshExtender-"$SIDPREFIX"'/g' -e 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
+  /etc/rc.d/S20network stop
+  /etc/rc.d/S20network start
+
   mount > /tmp/mount47.log
   dosmounted=`mount | grep /dos | wc -l`
 
