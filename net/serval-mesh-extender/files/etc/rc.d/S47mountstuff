@@ -154,7 +154,7 @@ EOF
 
   # Rename wireless interfaces based on SID of mesh extender
   keyringcount=`servald keyring list | wc -l`
-  if [[ $keyringcount < 2 ]]; then
+  if [[ $keyringcount == 2 ]]; then
     servald keyring add
   fi
   SIDPREFIX=`servald keyring list | tail -1 | cut -c1-12`
