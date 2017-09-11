@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20170911.1456.49
-PKG_RELEASE:=48
+PKG_VERSION:=START.20170911.1630.49
+PKG_RELEASE:=49
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -48,6 +48,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/hotplug2.rules $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/etc/init.d/dropbear $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/etc/firewall.user $(1)/etc
 	$(INSTALL_BIN) ./files/etc/inittab $(1)/etc
 	$(INSTALL_BIN) ./files/etc/profile $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/rc.d
