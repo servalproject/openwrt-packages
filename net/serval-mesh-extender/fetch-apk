@@ -1,0 +1,5 @@
+if [ -e /home/paul/Downloads/Serval_Mesh-0.93.apk ]; then
+   cp /home/paul/Downloads/Serval_Mesh-0.93.apk captiveportal
+else
+   cd captive portal
+fi

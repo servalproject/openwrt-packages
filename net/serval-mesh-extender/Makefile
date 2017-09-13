@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20170914.0150.49
-PKG_RELEASE:=62
+PKG_VERSION:=START.20170914.0322.49
+PKG_RELEASE:=63
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -29,7 +29,7 @@ define Package/conffiles
 endef
 
 define Build/Compile
-	( cd ./captiveportal ; tar zcvf ../servalwww.tgz . )
+	( ./fetch-apk ; cd ./captiveportal ; tar zcvf ../servalwww.tgz . )
 endef
 
 define Package/serval-mesh-extender/install
