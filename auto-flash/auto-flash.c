@@ -193,8 +193,8 @@ int main(int argc,char **argv)
 	    write(fd,"gl",2);
 	    usleep(100000);
 	    write(fd,"\r",1);
-	    usleep(3000000); // time for linux box to get ethernet up
-	    write(fd,"run lf\r",7);
+	    usleep(4000000); // time for linux box to get ethernet up
+	    write(fd,"\rrun lf\r",8);
 	    done_on_reset=1;
 	    fprintf(stderr,">>> Asserting done_on_reset=1 in uboot interrupt sequence\n");
 	  } else {
