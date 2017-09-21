@@ -194,7 +194,9 @@ int main(int argc,char **argv)
 	    usleep(100000);
 	    write(fd,"\r",1);
 	    usleep(4000000); // time for linux box to get ethernet up
-	    write(fd,"\rrun lf\r",8);
+	    write(fd,"\r\n",2);
+	    usleep(100000);
+	    write(fd,"run lf\r\n",8);
 	    done_on_reset=1;
 	    fprintf(stderr,">>> Asserting done_on_reset=1 in uboot interrupt sequence\n");
 	  } else {
@@ -202,7 +204,9 @@ int main(int argc,char **argv)
 	    fprintf(stderr,">>> Clearing ignore_uboot=0 in uboot interrupt sequence\n");
 	  }
 	}
-	if (!strcmp(line,"*        U-Boot 1.1.4  (Jun  6 2015)        *")) {
+	if ((!strcmp(line,"*        U-Boot 1.1.4  (Jun  6 2015)        *"))
+	    ||(!strcmp(line,"*        U-Boot 1.1.4  (Aug 10 2015)        *")))
+	  {
 	  // old uboot -- always interrupt and reflash
 	  usleep(100000);
 	  write(fd," ",1);
