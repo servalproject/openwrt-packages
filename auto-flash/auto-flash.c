@@ -191,12 +191,15 @@ int main(int argc,char **argv)
 	    // Board has correct u-boot, flash firmware.
 	    fprintf(stderr,">>> Sending commands to reflash firmware.\n");
 	    write(fd,"gl",2);
-	    usleep(100000);
+	    usleep(1000000);
 	    write(fd,"\r",1);
-	    usleep(4000000); // time for linux box to get ethernet up
-	    write(fd,"\r\n",2);
-	    usleep(100000);
-	    write(fd,"run lf\r\n",8);
+            {
+              int i;
+              char *s="\r\nrun lf\r\n";
+              for(i=0;s[i];i++) {
+                write(fd,&s[i],1); usleep(200000);
+              }
+            }
 	    done_on_reset=1;
 	    fprintf(stderr,">>> Asserting done_on_reset=1 in uboot interrupt sequence\n");
 	  } else {

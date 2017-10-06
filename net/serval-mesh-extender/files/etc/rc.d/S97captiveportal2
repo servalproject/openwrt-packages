@@ -2,7 +2,8 @@
 
 # Replace the config file that is part of the nodogsplash OpenWRT
 # package with the serval version
-cat /etc/serval/nodogsplash.conf > /etc/config/nodogsplash
+# XXX - This is now done in our special Mesh Extender version of nodogsplash
+#cat /etc/serval/nodogsplash.conf > /etc/config/nodogsplash
 
 # Un-tar the serval web pages
 mkdir -p /serval/www/
