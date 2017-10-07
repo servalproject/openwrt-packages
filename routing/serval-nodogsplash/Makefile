@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-nodogsplash
 PKG_FIXUP:=autoreconf
-PKG_VERSION:=0.9_beta9.9.9-MeshExtender2.0
+PKG_VERSION:=0.9_beta9.9.9-MeshExtender2.0-10
 PKG_RELEASE:=10
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/
