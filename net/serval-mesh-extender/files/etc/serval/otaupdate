@@ -4,7 +4,7 @@
 # Watch for over-the-air updates, and execute them if available
 #
 #
-bundleid=`cat /dos/otabid.txt`
+bundleid=`cat /dos/otabid`
 
 # Allow 10 seconds for servald to start up
 sleep 10
