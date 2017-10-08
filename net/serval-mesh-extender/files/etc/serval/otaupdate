@@ -16,7 +16,7 @@ do
 
 mkdir -p /serval/www
 
-currentversion=`cat /serval/www/ota-update-version.html`
+currentversion=`cat /etc/serval/ota-update-version.html`
 if [ -z $currentversion ]; then
   currentversion=0
 fi
@@ -31,10 +31,10 @@ if [ ! -z "$rhizomeversion" ]; then
     cp /serval/otaupdate.bin /dos/ota-update
     if [ -e /dos/ota-update ]; then
       chmod 755 /dos/ota-update
-      /dos/ota-update && echo "$rhizomeversion" > /serval/www/ota-update-version.html
+      /dos/ota-update && echo "$rhizomeversion" > /etc/serval/ota-update-version.html
       # Create some nice diagnostic files so that we can work out what version of
       # binaries we are using.
-      ls -l /serval > /serval/www/ota-update-result.html
+      ls -l /serval > /etc/serval/ota-update-result.html
       servald help > /serval/www/servald.txt
       strings /usr/bin/lbard > /serval/www/lbard.txt 
     fi
