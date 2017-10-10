@@ -20,6 +20,26 @@ if [[ $keyringcount < 2 ]]; then
   servald keyring add
 fi
 
+# 
+# Enable servald traffic in firewall if required
+#
+done=`uci show firewall | grep 4110 | wc -l`
+if [ $done = 0 ]; then
+  rule=`uci add firewall rule`
+  uci set firewall.${rule}.src='wan'
+  uci set firewall.${rule}.dest_port='4110'
+  uci set firewall.${rule}.target='ACCEPT'
+  uci set firewall.${rule}.proto='udp'
+
+  rule=`uci add firewall rule`
+  uci set firewall.${rule}.src='wan'
+  uci set firewall.${rule}.dest_port='4110'
+  uci set firewall.${rule}.target='ACCEPT'
+  uci set firewall.${rule}.proto='tcp'
+  uci commit firewall
+  /etc/init.d/firewall stop
+  /etc/init.d/firewall start
+fi
 
 #
 # run servald, and restart if it terminates for any reason

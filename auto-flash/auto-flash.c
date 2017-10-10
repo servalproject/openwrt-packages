@@ -191,10 +191,15 @@ int main(int argc,char **argv)
 	    // Board has correct u-boot, flash firmware.
 	    fprintf(stderr,">>> Sending commands to reflash firmware.\n");
 	    write(fd,"gl",2);
-	    usleep(100000);
+	    usleep(1000000);
 	    write(fd,"\r",1);
-	    usleep(3000000); // time for linux box to get ethernet up
-	    write(fd,"run lf\r",7);
+            {
+              int i;
+              char *s="\r\nrun lf\r\n";
+              for(i=0;s[i];i++) {
+                write(fd,&s[i],1); usleep(200000);
+              }
+            }
 	    done_on_reset=1;
 	    fprintf(stderr,">>> Asserting done_on_reset=1 in uboot interrupt sequence\n");
 	  } else {
@@ -202,7 +207,9 @@ int main(int argc,char **argv)
 	    fprintf(stderr,">>> Clearing ignore_uboot=0 in uboot interrupt sequence\n");
 	  }
 	}
-	if (!strcmp(line,"*        U-Boot 1.1.4  (Jun  6 2015)        *")) {
+	if ((!strcmp(line,"*        U-Boot 1.1.4  (Jun  6 2015)        *"))
+	    ||(!strcmp(line,"*        U-Boot 1.1.4  (Aug 10 2015)        *")))
+	  {
 	  // old uboot -- always interrupt and reflash
 	  usleep(100000);
 	  write(fd," ",1);

@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20170909.1553.49
-PKG_RELEASE:=43
+PKG_VERSION:=START.20171008.1943.50
+PKG_RELEASE:=69
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -29,7 +29,7 @@ define Package/conffiles
 endef
 
 define Build/Compile
-	( cd ./captiveportal ; tar zcvf ../servalwww.tgz . )
+	( ./fetch-apk ; cd ./captiveportal ; tar zcvf ../servalwww.tgz . )
 endef
 
 define Package/serval-mesh-extender/install
@@ -44,7 +44,6 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/config/system $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/uhttpd $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/wireless.template $(1)/etc/config
-	$(INSTALL_BIN) ./files/etc/serval/nodogsplash.conf $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/hotplug2.rules $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/etc/init.d/dropbear $(1)/etc/init.d

@@ -2,12 +2,18 @@
 
 # Replace the config file that is part of the nodogsplash OpenWRT
 # package with the serval version
-cat /etc/serval/nodogsplash.conf > /etc/config/nodogsplash
+# XXX - This is now done in our special Mesh Extender version of nodogsplash
+#cat /etc/serval/nodogsplash.conf > /etc/config/nodogsplash
 
 # Un-tar the serval web pages
 mkdir -p /serval/www/
 cd /serval/www/
 tar zxf /etc/serval/servalwww.tgz
+
+# Tag splash page with OTA version
+echo "<pre>" >> /serval/www/splash.html
+cat /serval-var/ota-version.txt >> /serval/www/splash.html
+echo "</pre>" >> /serval/www/splash.html
 
 # Start the captive portal
 /etc/init.d/nodogsplash start

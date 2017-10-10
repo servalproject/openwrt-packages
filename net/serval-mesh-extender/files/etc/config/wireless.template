@@ -18,13 +18,23 @@ config wifi-iface adhoc
         option mode     adhoc
         option bssid    02:ca:ff:dd:ca:ce             
         option bgscan   0                             
-                               						                                                                                                                                                            
-config wifi-iface public                      
+
+config wifi-iface public
 	option ifname     wlan0
         option device     radio0
         option network    public              
         option mode       ap                  
         option isolate    0                   
-        option ssid       public.servalproject.org
+        option ssid       servalproject.org
+        option hidden     0                       
+        option encryption none
+
+config wifi-iface public1                     
+	option ifname     wlan1
+        option device     radio0
+        option network    public1
+        option mode       ap                  
+        option isolate    0                   
+        option ssid       mesh-extender
         option hidden     0                       
         option encryption none

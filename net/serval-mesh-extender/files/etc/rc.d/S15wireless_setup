@@ -1,11 +1,11 @@
 #!/bin/sh
-sed 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
 
 # The following will result in the mesh extender having a different MAC and IP on every boot.
 # While this may be inconvenient in some ways, it also ensures that over multiple reboots that no
 # IP/MAC colissions should persist between nearby mesh extenders.  Drat that Birthday Paradox.
 
-  apE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
+  ap0E=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
+  ap1E=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
 meshE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X" ":" 1/1 "%02X"'`
 
 #mesh ip is last 3 of mac munched to 10.0.0.0/8
@@ -13,13 +13,13 @@ meshE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" "
          p5=("0x" substr($5,0,2))+0; printf "%d.%d.%d",p3,p4,p5 }' `
 
 # AP IP is last 2 of mac munged to fit 172.16-31
-  apip=`echo $apE |awk -F: '{ p4=("0x" substr($4,0,2))+0 ; p5=("0x" substr($5,0,2))+0  ;printf "%d.%d",(16+p4%16),p5 }' `
+  apip=`echo $ap0E |awk -F: '{ p4=("0x" substr($4,0,2))+0 ; p5=("0x" substr($5,0,2))+0  ;printf "%d.%d",(16+p4%16),p5 }' `
 # Keep AP IP handy for later use
   echo $apip >/tmp/apip.txt
 
-echo $meship $meshE $apE $apip
+echo $meship $meshE $ap0E $ap1E $apip
 
-sed -e s/MESHIP/$meship/g -e s/APIP/$apip/g -e s/MESHETHER/$meshE/g  -e s/APETHER/$apE/g < /etc/config/network.template > /etc/config/network
+sed -e s/MESHIP/$meship/g -e s/APIP/$apip/g -e s/MESHETHER/$meshE/g  -e s/APETHER0/$ap0E/g -e s/APETHER1/$ap1E/g < /etc/config/network.template > /etc/config/network
 
 # If left hanging around can cause problems.
 # (should be deleted when we fresh install, but this doesn't always seem to be the case)
