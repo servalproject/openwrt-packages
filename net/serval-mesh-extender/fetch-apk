@@ -1,8 +1,8 @@
 md5sum=`md5sum < captiveportal/images/ServalChat.apk | cut -f1 -d" "`
 echo "MD5 sum = $md5sum"
-if [ "x$md5sum" != "x111001c856cb04534aff96e340da346b" ]; then
+if [ "x$md5sum" != "xe804753ad6fbe86d6d711826fcd7bd3c" ]; then
    rm captiveportal/images/ServalChat.apk
-   wget -O captiveportal/images/ServalChat.apk http://developer.servalproject.org/files/chat/alpha/ServalChat-alpha-0.01-pre-107-g8c40c91b.apk
+   wget -O captiveportal/images/ServalChat.apk http://developer.servalproject.org/files/chat/alpha/ServalChat-alpha-0.01-pre-111-ga6daeca9.apk
 else
    echo MD5 sum matches -- not downloading.
 fi
