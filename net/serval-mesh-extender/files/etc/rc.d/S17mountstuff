@@ -6,7 +6,7 @@ START=17
 start() {
 
     # Disable firewall as it is currently wrongly configured
-#    /etc/init.d/firewall stop
+    /etc/init.d/firewall stop
 
     # Start httpd for tracking boot progress
     mkdir /tmp/www
@@ -168,34 +168,6 @@ EOF
 
   /etc/serval/boot_report OK "Finished mounting file systems"
 
-  # Finally, read the EEPROM on the power cable, and set some parameters
-  # The radio is in silent mode on power up, so we need to make sure we allow
-  # enough time for it to exit silent mode, or else we need to tell the radio to
-  # exit silent mode when asked to dump eeprom contents.
-  /etc/serval/boot_report OK "Reading Radio EEPROM settings"
-  flash900 eeprom /dev/ttyATH0 directives list > /serval-var/eeprom.directives
-  flash900 eeprom /dev/ttyATH0 dump > /serval-var/eeprom.dump 2>&1
-
-  otabid=`flash900 eeprom /dev/ttyATH0 directives get OTABID | cut -f2 -d=`
-  yesroot=`flash900 eeprom /dev/ttyATH0 directives get YESROOT | cut -f2 -d=`
-  noroot=`flash900 eeprom /dev/ttyATH0 directives get NOROOT | cut -f2 -d=`
-  if [ "x$otabid" != "x" ]; then
-    echo $otabid >/dos/otabid.txt
-  fi
-  if [ "x$yesroot" != "x" ]; then
-    echo $yesroot >/dos/yesroot
-    rm /dos/noroot
-  fi
-  if [ "x$noroot" != "x" ]; then
-    touch /dos/noroot
-    rm /dos/yesroot
-  fi
-  lines=`wc -l < /serval-var/eeprom.directives`
-  # Try a second time if we at first read no directives
-  if [ "$xlines" == "x0" ]; then
-      flash900 eeprom /dev/ttyATH0 directives list > /serval-var/eeprom.directives  
-  fi
-  
   /etc/serval/boot_report OK "Read Radio EEPROM settings (${lines} lines)"
 
   /etc/serval/boot_report OK "Exiting S17mountstuff"    

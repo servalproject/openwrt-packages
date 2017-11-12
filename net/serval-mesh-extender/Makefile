@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20171112.1318.50
-PKG_RELEASE:=76
+PKG_VERSION:=START.20171112.1337.50
+PKG_RELEASE:=77
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -53,6 +53,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/rc.d/S13pre_wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S15wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S17mountstuff $(1)/etc/rc.d
+	$(INSTALL_BIN) ./files/etc/rc.d/S47radioeeprom $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S49servald $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S94captiveportal $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S97captiveportal2 $(1)/etc/rc.d
