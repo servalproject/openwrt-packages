@@ -1,17 +1,17 @@
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2006 OpenWrt.org
 
-START=47
+START=17
 
 start() {
 
     # Disable firewall as it is currently wrongly configured
-    /etc/init.d/firewall stop
+#    /etc/init.d/firewall stop
 
     # Start httpd for tracking boot progress
     mkdir /tmp/www
 #    httpd -h /tmp/www
-    /etc/serval/boot_report OK "Entering S47mountstuff"    
+    /etc/serval/boot_report OK "Entering S17mountstuff"    
     
   if [ -e /dev/mmcblk0 ]; then
      # Bulk storage on SPI microSD
@@ -153,6 +153,8 @@ EOF
   fi
 
   # Rename wireless interfaces based on SID of mesh extender
+  export SERVALINSTANCE_PATH=/serval-var
+  df -h > /tmp/prekeyring_fs.txt
   keyringcount=`servald keyring list | wc -l`
   if [[ $keyringcount == 2 ]]; then
     servald keyring add
@@ -161,7 +163,7 @@ EOF
   sed -e 's/mesh-extender/'MeshExtender-"$SIDPREFIX"'/g' -e 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
 #  /etc/rc.d/S20network reload
 
-  mount > /tmp/mount47.log
+  mount > /tmp/mount17.log
   dosmounted=`mount | grep /dos | wc -l`
 
   /etc/serval/boot_report OK "Finished mounting file systems"
@@ -196,7 +198,7 @@ EOF
   
   /etc/serval/boot_report OK "Read Radio EEPROM settings (${lines} lines)"
 
-  /etc/serval/boot_report OK "Exiting S47mountstuff"    
+  /etc/serval/boot_report OK "Exiting S17mountstuff"    
 
   
 }
