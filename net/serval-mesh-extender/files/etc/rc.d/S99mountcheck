@@ -24,7 +24,7 @@ start() {
        echo "$before $after" > /tmp/mount_problem
        /etc/serval/boot_report ERROR "/serval and /serval-var unmounted (probably by jffs2 mount) -- rebooting"    
        sleep 10
-       reboot
+#       reboot
     fi
 
     /etc/serval/boot_report OK "Exiting S99mountcheck"    

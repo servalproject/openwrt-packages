@@ -12,7 +12,7 @@ start() {
     /etc/serval/boot_report OK "Reseting /etc/inittab to default"
     if [ -e /overlay/etc/inittab ]; then
 	rm /overlay/etc/inittab
-	reboot
+#	reboot
     fi
     /etc/serval/boot_report OK "/etc/inittab ok"
 
