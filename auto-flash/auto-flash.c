@@ -191,7 +191,7 @@ int main(int argc,char **argv)
 	    // Board has correct u-boot, flash firmware.
 	    fprintf(stderr,">>> Sending commands to reflash firmware.\n");
 	    write(fd,"gl",2);
-	    usleep(1000000);
+	    usleep(12000000);
 	    write(fd,"\r",1);
             {
               int i;
@@ -213,7 +213,7 @@ int main(int argc,char **argv)
 	  // old uboot -- always interrupt and reflash
 	  usleep(100000);
 	  write(fd," ",1);
-	  usleep(3000000); // time for linux box to get ethernet up
+	  usleep(12000000); // time for linux box to get ethernet up
 	  write(fd,"run lu\r",7);
 	  fprintf(stderr,">>> Upgrading uboot\n");
 	}
