@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-mesh-extender
-PKG_VERSION:=START.20171114.0748.50
-PKG_RELEASE:=79
+PKG_VERSION:=START.20180424.1154.50
+PKG_RELEASE:=80
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libc
@@ -78,6 +78,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_DIR) $(1)/serval
 	$(INSTALL_BIN) ./files/serval/MeshExtender $(1)/serval
 	$(INSTALL_BIN) ./files/etc/serval/lbard-restful.conf $(1)/etc/serval
+	$(INSTALL_BIN) ./files/etc/serval/Chart.min.js $(1)/etc/serval
 	$(INSTALL_DIR) $(1)/serval/www
 	$(INSTALL_BIN) servalwww.tgz $(1)/etc/serval
 	$(INSTALL_DIR) $(1)/serval-var
