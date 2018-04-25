@@ -166,6 +166,21 @@ EOF
   mount > /tmp/mount17.log
   dosmounted=`mount | grep /dos | wc -l`
 
+  # Check if /serval-var and /serval have been mounted read-write.
+  # if not, or if they were never mounted at all, then create RAM disks
+  # on those mount points
+  svok=`mount | grep "/serval-var .*(rw" | wc -l`
+  if [ $svok != 1 ]; then
+    umount /serval-var
+    mount -t tmpfs -o nr_inodes=1k,mode=01777,nosuid,nodev,size=8M tmpfs /serval-var
+  fi
+  sok=`mount | grep "/serval.*(rw" | wc -l`
+  if [ $svok != 1 ]; then
+    umount /serval
+    mount -t tmpfs -o nr_inodes=1k,mode=01777,nosuid,nodev,size=4M tmpfs /serval
+    mkdir -p /serval/www
+  fi
+
   /etc/serval/boot_report OK "Finished mounting file systems"
 
   /etc/serval/boot_report OK "Read Radio EEPROM settings (${lines} lines)"
