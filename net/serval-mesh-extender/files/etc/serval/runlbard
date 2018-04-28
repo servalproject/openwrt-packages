@@ -40,7 +40,7 @@ do
     lbard 127.0.0.1:4110 lbard:lbard `servald keyring list | tail -1 | cut -f1 -d:` `servald keyring list | tail -1 | cut -f2 -d:` /dev/ttyATH0 timeslave udptime logrejects meshmsonly otadir=/serval flags=1 bundlelog=/serval-var/lbard.log $otabid fixfs # rebootwhenstuck periodicrequests=/etc/serval/lbard-restful.conf 
     # If LBARD stops or dies, try reflashing the radio incase flashing it on boot failed.
     # (we have seen this happen once)
-    flash900 /etc/serval/rfd900 /dev/ttyATH0
+    # flash900 /etc/serval/rfd900 /dev/ttyATH0
     # We also take the opportunity to restart servald to make it fresh and keep everything in step
     servald stop
     sleep 3
