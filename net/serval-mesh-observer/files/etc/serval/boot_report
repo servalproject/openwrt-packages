@@ -1,0 +1,28 @@
+#!/bin/sh
+
+colour="#ffffff"
+
+if [ "x$1" == "xOK" ]; then
+  colour="#00ff00"
+fi
+if [ "x$1" == "xWARN" ]; then
+  colour="#ffff00"
+fi
+if [ "x$1" == "xFAIL" ]; then
+  colour="#ff6f00"
+fi
+if [ "x$1" == "xERROR" ]; then
+  colour="#ff6f00"
+fi
+
+timesinceboot=`cut -f1 -d. /proc/uptime`
+
+echo "<tr><td bgcolor=\"${colour}\">$1</td><td>BOOT+${timesinceboot}</td><td>$2</td></tr>" >> /tmp/boot_reports
+echo "$2" >/dev/kmsg
+
+mkdir -p /tmp/www
+sed -e "s/TIMESINCEBOOT/${timesinceboot}/g" /etc/serval/boot_index_top.html >/tmp/www/index.html
+cat /tmp/boot_reports /etc/serval/boot_index_middle.html >> /tmp/www/index.html
+dmesg >> /tmp/www/index.html
+sed -e "s/TIMESINCEBOOT/${timesinceboot}/g" /etc/serval/boot_index_bottom.html >>/tmp/www/index.html
+

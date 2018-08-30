@@ -1,0 +1,50 @@
+#!/bin/sh
+
+#
+# run lbard, and restart if it terminates for any reason
+# (it is experimental software, after all).
+#
+
+# Allow 10 seconds for servald to start up so that we can read our SID
+sleep 10
+
+while [ 1 ]
+do
+
+  # Check /dos for files to modify SSID of AP, and/or disable adhoc wifi (for testing lbard
+  # UHF transport)
+  if [ -e /dos/nomesh ]; then
+    ifconfig adhoc0 down
+  else
+    ifconfig adhoc0 up
+  fi
+  if [ -e /dos/apssid ]; then
+    ssid=`cat /dos/apssid`
+    wc=`grep ssid=${ssid} /var/run/hostapd-phy0.conf | wc -l`
+    if [ $wc -eq 0 ]; then
+      cat /var/run/hostapd-phy0.conf | sed -e 's/^ssid=.*$/ssid='"${ssid}"'/' > /var/run/hostapd-phy0.conf.tmp
+      mv /var/run/hostapd-phy0.conf.tmp /var/run/hostapd-phy0.conf
+      kill -1 `cat /var/run/wifi-phy0.pid`
+    fi
+  fi
+
+  # If we have an OTA bundle ID, then tell LBARD to keep an eye on that bundle
+  if [ -e /dos/otabid ]; then
+    otabid=otabid=`cat /dos/otabid`
+  else
+    otabid=
+  fi 
+
+  if [ ! -e /dos/nouhf ]; then
+    # Run LBARD
+    lbard 127.0.0.1:4110 lbard:lbard `servald keyring list | tail -1 | cut -f1 -d:` `servald keyring list | tail -1 | cut -f2 -d:` /dev/ttyATH0 timeslave udptime logrejects meshmsonly otadir=/serval flags=1 bundlelog=/serval-var/lbard.log $otabid fixfs # rebootwhenstuck periodicrequests=/etc/serval/lbard-restful.conf 
+    # If LBARD stops or dies, try reflashing the radio incase flashing it on boot failed.
+    # (we have seen this happen once)
+    # flash900 /etc/serval/rfd900 /dev/ttyATH0
+    # We also take the opportunity to restart servald to make it fresh and keep everything in step
+    servald stop
+    sleep 3
+  else
+    sleep 10
+  fi
+done

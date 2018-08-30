@@ -1,0 +1,175 @@
+# Answer any new MeshMS messages received in this conversation
+them=$1
+me=`servald keyring list | tail -1 | cut -f1 -d:`
+
+adminsid=`cat /dos/monitor.sid`
+authorised=0
+if [ $them == $adminsid ]; then
+  authorised=1
+fi
+helpdesksid=`cat /dos/helpdesk.sid`
+helpdesk=0
+if [ $them == $helpdesksid ]; then
+  helpdesk=1
+fi
+
+rm /tmp/messages
+servald meshms list messages $me $them  | awk -F: '{ if ($4 == "<" && $2 > '$readoffset') print $5; }' | sed -e 's/[^a-z|A-Z|0-9| ]//g' -e 's/ /./g' | sed -n '1!G;h;$p' >/tmp/messages
+for command in `cat /tmp/messages`; do
+   action=`echo $command | cut -f1 -d.`
+   arg=`echo $command | sed -e 's/^[^\.]*//' -e 's/\./ /g'`
+   echo $action : $arg
+   case $action in
+        help ) # Display list of commands this unit understands
+	        if [ $authorised == 1 ]; then
+	                message="I am a Serval Mesh Extender, Master. I will obey the following commands: "`cat $0 | grep " )" | grep -v grep`
+		else
+		    if [ $helpdesk == 1 ]; then
+			    message="I am a Serval Mesh Extender. I know the following commands: "`cat $0 | grep " )" | grep -v grep | grep -v "requires authorisation"`
+		    else
+			    message="I am a Serval Mesh Extender. I know the following commands: "`cat $0 | grep " )" | grep -v grep | grep -v "requires authorisation|for helpdesk"`
+		    fi
+		fi
+                servald meshms send message $me $them "${message}"
+                ;;
+	helpsay ) # Reply to a helpdesk message (for helpdesk operators only)
+		# Actually, nothing to do here: it is all implicit.
+	        # (see /etc/serval/otaupdate to see how it works)
+	        # So just tell the user if they aren't the helpdesk, and thus can't
+	        # use it.
+		if [ $helpdesk == 0 ]; then
+		  message="You are not authorised to use this function"
+		else
+		  message="Help reply published"
+	        fi
+		servald meshms send message $me $them "${message}"
+		;;
+        version ) # Display version of Serval core, and last applied OTA update
+                message="Serval Mesh version: "`servald version | head -1`", Last OTA update: "`cat /serval-var/ota-version.txt`
+                servald meshms send message $me $them "${message}"
+                ;;
+        peers ) # Display list of peers reachable at this moment
+		message=`servald id peers`
+                servald meshms send message $me $them "My peers are: ${message}"
+                ;;
+        date ) # Display what time / date this unit thinks it is
+                message="I think the time is "`date`
+                servald meshms send message $me $them "${message}"
+                ;;
+	setname ) # Change the name of this node (requires authorisation)
+	       if [ $authorised == 1 ]; then
+	       	  servald keyring
+		  message="Renaming node to ${arg}"
+		  
+		  servald stop
+		  sleep 1
+		  servald keyring set did `servald keyring list | tail -1 | cut -f1 -d:` `servald keyring list | tail -1 | cut -f2 -d:` "${arg}"
+
+		  servald meshms send message $me $them "${message}"
+		  sleep 5
+		  reboot
+	        else
+		  message="You are not authorised to use this function"
+		  servald meshms send message $me $them "${message}"
+		fi		
+                ;;
+	setnumber ) # Change the phone number of this node (requires authorisation)
+	       if [ $authorised == 1 ]; then
+	       	  servald keyring
+		  message="Renumbering node to ${arg}"
+		  
+		  servald stop
+		  sleep 1
+		  servald keyring set did `servald keyring list | tail -1 | cut -f1 -d:` "${arg}" `servald keyring list | tail -1 | cut -f3 -d:`
+
+		  servald meshms send message $me $them "${message}"
+		  sleep 5
+		  reboot
+	        else
+		  message="You are not authorised to use this function"
+		  servald meshms send message $me $them "${message}"
+		fi		
+                ;;
+	reboot ) # Reboot node (requires authorisation)
+	       if [ $authorised == 1 ]; then
+		  message="Rebooting node in 5 seconds"
+		  servald meshms send message $me $them "${message}"
+		  sleep 5
+		  reboot
+	        else
+		  message="You are not authorised to use this function"
+		  servald meshms send message $me $them "${message}"
+		fi		
+                ;;
+	wifioff ) # Disable ad-hoc wifi (requires authorisation)
+	       if [ $authorised == 1 ]; then
+		  message="Disabling ad-hoc wifi; only UHF packet radio will be available for talking to other Mesh Extenders"
+		  servald meshms send message $me $them "${message}"
+		  touch /dos/nomesh
+	        else
+		  message="You are not authorised to use this function"
+		  servald meshms send message $me $them "${message}"
+		fi		
+                ;;
+	wifion ) # Enable ad-hoc wifi (requires authorisation)
+	       if [ $authorised == 1 ]; then
+		  message="Enabling ad-hoc wifi"
+		  servald meshms send message $me $them "${message}"
+		  if [ -e /dos/nomesh ]; then
+		     rm /dos/nomesh
+		  fi
+	        else
+		  message="You are not authorised to use this function"
+		  servald meshms send message $me $them "${message}"
+		fi		
+                ;;
+	uhfoff ) # Disable UHF packet radio (requires authorisation)
+	       if [ $authorised == 1 ]; then
+		  message="Disabling UHF packet radio; only ad-hoc wifi will be available for talking to other Mesh Extenders"
+		  servald meshms send message $me $them "${message}"
+		  touch /dos/nouhf
+	        else
+		  message="You are not authorised to use this function"
+		  servald meshms send message $me $them "${message}"
+		fi		
+                ;;
+	uhfon ) # Enable UHF packet radio (requires authorisation)
+	       if [ $authorised == 1 ]; then
+		  message="Enabling UHF packet radio"
+		  servald meshms send message $me $them "${message}"
+		  if [ -e /dos/nouhf ]; then
+		     rm /dos/nouhf
+		  fi
+	        else
+		  message="You are not authorised to use this function"
+		  servald meshms send message $me $them "${message}"
+		    fi
+                ;;
+	wifissid ) # Change SSID of ad-hoc wifi (requires reboot)
+	       if [ $authorised == 1 ]; then
+		  if [ -z "$arg" ]; then
+		  	  echo $arg > /dos/apssid
+			  message="Changing wifi SSID to ${arg}. Will take effect after reboot"
+		  else
+			rm /dos/apssid
+			message="Reseting wifi SSID. Will take effect after reboot"
+		  fi
+		  # Kill lbard, so that /etc/serval/runlbard goes through the loop
+		  # and checks the contents of this file
+		  kill `ps | grep lbard | grep -v runlbard | grep -v grep | awk '{ print $1; }'`
+		  
+		  servald meshms send message $me $them "${message}"	
+	        else
+		  message="You are not authorised to use this function"
+		  servald meshms send message $me $them "${message}"
+		fi		 
+                ;;
+        *)
+                servald meshms send message $me $them "Sorry, I don't understand '$action$'. Message 'help' for more information."
+                ;;
+   esac
+done
+
+# Mark these messages as read
+servald meshms read messages $me $them $lastoffset
+
