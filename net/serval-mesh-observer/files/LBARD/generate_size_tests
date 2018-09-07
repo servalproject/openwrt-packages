@@ -1,0 +1,31 @@
+head -62 tests/lbard > tests/lbard_size_tests
+for i in `seq 6000 10 8200`;
+do
+      echo $i
+
+cat >>tests/lbard_size_tests <<EOF
+
+doc_modulo${i}="Can insert bundle with size = ${i} modulo 8192"
+setup_modulo${i}() {
+   # 10% packet loss
+   setup 0.1
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 ${i}
+}
+test_modulo${i}() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by \$BID:\$VERSION +B &&
+         bundle_received_by \$BID:\$VERSION +C &&
+         bundle_received_by \$BID:\$VERSION +D
+   }
+   wait_until --timeout=150 all_bundles_received
+}
+EOF
+
+done    
+
+echo 'runTests $@' >> tests/lbard_size_tests
+
+chmod 755 tests/lbard_size_tests

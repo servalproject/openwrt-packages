@@ -1,0 +1,15 @@
+#!/bin/csh -f
+
+if ( -e testing ) then
+  cd testing
+endif
+
+foreach instance ( serval? )
+ # Stop relevant servald instance
+
+ cd $instance
+ setenv SERVALINSTANCE_PATH `pwd`
+ ~/g/serval-dna/servald rhizome list
+ cd ..
+
+end 

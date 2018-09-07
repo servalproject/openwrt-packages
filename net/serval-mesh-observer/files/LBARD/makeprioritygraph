@@ -1,0 +1,3 @@
+grep :from1: priority_experiment.*nopriority* | sed 's/\+/./g' | cut -f1-2 -d: | awk -F. '{ print $2,$5; }' | sort -n | sed 's/ /,/g' | sed 's/ms//g' >nopriority.csv
+grep :from1: priority_experiment.*..* | sed 's/\+/./g' | cut -f1-2 -d: | awk -F. '{ print $2,$5; }' | sort -n | sed 's/ /,/g' | sed 's/ms//g' >withpriority.csv
+gnuplot -c graph.gp

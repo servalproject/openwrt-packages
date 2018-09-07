@@ -1,0 +1,10 @@
+#!/bin/sh
+if type md5 1>/dev/null 2>/dev/null ; then
+   cat "$@" | md5
+elif type md5sum 1>/dev/null 2>/dev/null ; then
+   set -- $(cat "$@" | md5sum)
+   echo "$1"
+else
+   echo "md5 or md5sum: not found" >&2
+   exit 2
+fi

@@ -1,0 +1,16 @@
+#!/bin/csh -f
+
+if ( -e testing ) then
+  cd testing
+endif
+
+foreach n ( 1 2 3 4 )
+ # Start relevant servald instance if required
+ cd serval$n
+ setenv SERVALINSTANCE_PATH `pwd`
+ ../../serval-dna/servald start
+ sleep 1
+ ../../serval-dna/servald id self | tail -1 > self.sid
+
+ cd ..
+end 

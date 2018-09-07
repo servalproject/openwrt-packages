@@ -1,0 +1,42 @@
+#!/bin/bash
+
+owbox=serval@192.168.56.104
+
+# 1. Push to github
+git push origin MeshExtender2.0
+
+# 2. Get commit ID, and update openwrt-packages Makefile
+commit=`git log | head -1 | cut -f2 -d" "`
+pushd ../openwrt-packages/net/serval-lbard
+
+PKG_VERSION=START.`date +%Y%m%d.%H%M.%S`
+PKG_SOURCE_VERSION=`grep PKG_SOURCE_VERSION:= Makefile | cut -f2 -d=`
+
+if [ "$PKG_SOURCE_VERSION" == "$commit" ]; then
+  echo "OpenWRT package is up to date"
+  PKG_VERSION=`grep PKG_VERSION:= Makefile | cut -f2 -d=`
+else
+  PKG_RELEASE=`grep PKG_RELEASE:= Makefile | cut -f2 -d=`
+  (( PKG_RELEASE += 1 ))
+
+  cat Makefile | sed -e "s/^PKG_VERSION:=.*$/PKG_VERSION:=${PKG_VERSION}/" -e "s/^PKG_RELEASE:=.*$/PKG_RELEASE:=${PKG_RELEASE}/g" -e "s/^PKG_SOURCE_VERSION:=.*$/PKG_SOURCE_VERSION:=${commit}/" > Makefile.tmp
+  cat Makefile.tmp
+  mv Makefile.tmp Makefile
+  git commit -m "Update serval-lbard" Makefile
+fi
+
+# 3. Push openwrt-packages to github
+git push origin MeshExtender2.0
+
+popd
+
+# 4. ssh to openwrt build box, run up script, build
+ssh ${owbox} "( cd o ; scripts/feeds update serval ; scripts/feeds install -a serval ; scripts/feeds install -p serval ; make V=99 package/serval-lbard/compile package/serval-lbard/install ; ls -l build_dir/target-mips_34kc_uClibc-0.9.33.2/serval-lbard-${PKG_VERSION}/ipkg-ar71xx/serval-lbard/usr/bin/lbard )"
+
+# 6. scp compiles binary from openwrt build box
+if [ -e lbard.openwrt ]; then
+  rm lbard.openwrt
+fi
+scp ${owbox}:o/build_dir/target-mips_34kc_uClibc-0.9.33.2/serval-lbard-${PKG_VERSION}/ipkg-ar71xx/serval-lbard/usr/bin/lbard lbard.openwrt
+ls -l lbard.openwrt
+strings lbard.openwrt | grep 2017

@@ -1,0 +1,9 @@
+#!/bin/csh -f
+
+foreach prioritisation ( "" nopriority )
+  foreach bundle_count ( 1 2 4 8 16 32 64 128 256 1024 2048 )
+    if ( ! -e priority_experiment.$bundle_count.$prioritisation.log ) then
+      screen -S experiment `pwd`/single_experiment_commands $bundle_count $prioritisation
+    endif
+  end
+end

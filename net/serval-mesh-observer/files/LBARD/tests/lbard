@@ -1,0 +1,1697 @@
+#!/bin/bash
+
+# Tests for Serval LBARD
+#
+# Copyright 2016 Serval Project, Inc.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+source "${0%/*}/../serval-dna/testframework.sh"
+source "${0%/*}/../testdefs.sh"
+
+lbard_console() {
+   local C="$instance_name"
+   executeOk --core-backtrace --timeout=600 --executable="lbard"  --stdout-file="${C}_LBARDOUT" --stderr-file="${C}_LBARDERR" $*
+   tfw_cat --stdout --stderr
+}
+
+fork_lbard_console() {
+   local C="$instance_name"
+   fork %lbard$C lbard_console "$*"
+}
+
+setup_bundles() {
+   # Configure four servald daemons without any interfaces connecting them, and
+   # start them running.
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+
+   # Create files in each servald instance if requested
+   if [ "x$2" != "x" ]; then
+       common_files=$2
+       for ((n = 0; n < $files_per_instance; ++n)); do
+	   set_instance +A
+           create_file file-common-${n} 10000
+	   echo -e "service=File\nsender=$SIDA\nrecipient=$SIDB" >file$n.manifest
+	   executeOk_servald rhizome add file $SIDA file-common-${n} file${n}.manifest
+	   extract_manifest_id BID file${n}.manifest
+	   extract_manifest_version VERSION file${n}.manifest
+	   executeOk_servald rhizome export bundle $BID file${n}e.manifest file${n}e
+	   for i in B C D
+	   do
+	       set_instance +B
+	       executeOk_servald rhizome import bundle file1e file1e.manifest	       
+	   done
+       done
+       
+   fi
+   if [ "x$3" != "x" ]; then
+       files_per_instance=$3       
+       for i in A B C D
+       do
+	   set_instance +$i
+	   local sidvar="SID$instance_name"
+	   for ((n = 0; n < $files_per_instance; ++n)); do
+               create_file file-$i-$n 10000
+               tfw_quietly executeOk_servald rhizome add file "${!sidvar}" file-$i-$n file-$i-$n.manifest	   
+	   done
+       done
+   fi
+   if [ "x$4" != "x" ]; then
+       lbardflags="$4"
+   else
+       lbardflags=""
+   fi
+}
+
+start_instances() {   
+
+   if [ x"$1" != "x"]; then
+      fakeradios=$1
+   else
+      fakeradios=rfd900,rfd900,rfd900,rfd900
+   fi
+
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio "$fakeradios" ttys.txt "$1"
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   
+   # Start four lbard daemons.
+   set_instance +A
+   fork_lbard_console "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" "$tty1" announce pull $lbardflags
+   set_instance +B
+   fork_lbard_console "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" "$tty2" pull $lbardflags
+   set_instance +C
+   fork_lbard_console "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" "$tty3" pull $lbardflags
+   set_instance +D
+   fork_lbard_console "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" "$tty4" pull $lbardflags
+}
+
+setup() {
+   setup_bundles $*
+   start_instances
+}
+
+setup20() {
+   # Configure four servald daemons without any interfaces connecting them, and
+    # start them running.
+
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D +E +F +G +H +I +J +K +L +M +N +O +P +Q +R +S +T create_single_identity
+    
+   # Create files in each servald instance if requested
+   if [ "x$2" != "x" ]; then
+       common_files=$2
+       for ((n = 0; n < $common_files; ++n)); do
+	   set_instance +A
+           create_file file-common-${n} 10000
+	   echo -e "service=File\nsender=$SIDA\nrecipient=$SIDB" >file$n.manifest
+	   executeOk_servald rhizome add file $SIDA file-common-${n} file${n}.manifest
+	   extract_manifest_id BID file${n}.manifest
+	   extract_manifest_version VERSION file${n}.manifest
+	   executeOk_servald rhizome export bundle $BID file${n}e.manifest file${n}e
+	   for i in B C D E F G H I J K L M N O P Q R S T
+	   do
+	       set_instance +B
+	       executeOk_servald rhizome import bundle file1e file1e.manifest	       
+	   done
+       done       
+   fi
+   
+   if [ "x$3" != "x" ]; then
+       files_per_instance=$3       
+       for i in A B C D E F G H I J K L M N O P Q R S T
+       do
+	   set_instance "+$i"
+	   local sidvar="SID$instance_name"
+	   for ((n = 0; n < $files_per_instance; ++n)); do
+               create_file file-$i-$n 10000
+               tfw_quietly executeOk_servald rhizome add file "${!sidvar}" file-$i-$n file-$i-$n.manifest	   
+	   done
+       done
+   fi
+   
+   if [ "x$4" != "x" ]; then
+       lbardflags="$4"
+   else
+       lbardflags=""
+   fi
+   
+   foreach_instance +A +B +C +D +E +F +G +H +I +J +K +L +M +N +O +P +Q +R +S +T start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   get_servald_restful_http_server_port PORTE +E
+   get_servald_restful_http_server_port PORTF +F
+   get_servald_restful_http_server_port PORTG +G
+   get_servald_restful_http_server_port PORTH +H
+   get_servald_restful_http_server_port PORTI +I
+   get_servald_restful_http_server_port PORTJ +J
+   get_servald_restful_http_server_port PORTK +K
+   get_servald_restful_http_server_port PORTL +L
+   get_servald_restful_http_server_port PORTM +M
+   get_servald_restful_http_server_port PORTN +N
+   get_servald_restful_http_server_port PORTO +O
+   get_servald_restful_http_server_port PORTP +P
+   get_servald_restful_http_server_port PORTQ +Q
+   get_servald_restful_http_server_port PORTR +R
+   get_servald_restful_http_server_port PORTS +S
+   get_servald_restful_http_server_port PORTT +T
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900,rfd900 ttys.txt "$1"
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 20 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   tty5=$(sed -n 5p ttys.txt)
+   tty6=$(sed -n 6p ttys.txt)
+   tty7=$(sed -n 7p ttys.txt)
+   tty8=$(sed -n 8p ttys.txt)
+   tty9=$(sed -n 9p ttys.txt)
+   tty10=$(sed -n 10p ttys.txt)
+   tty11=$(sed -n 11p ttys.txt)
+   tty12=$(sed -n 12p ttys.txt)
+   tty13=$(sed -n 13p ttys.txt)
+   tty14=$(sed -n 14p ttys.txt)
+   tty15=$(sed -n 15p ttys.txt)
+   tty16=$(sed -n 16p ttys.txt)
+   tty17=$(sed -n 17p ttys.txt)
+   tty18=$(sed -n 18p ttys.txt)
+   tty19=$(sed -n 19p ttys.txt)
+   tty20=$(sed -n 20p ttys.txt)
+   # Start four lbard daemons.
+   fork %lbardA lbard "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" "$tty1" announce pull
+   fork %lbardB lbard "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" "$tty2" pull $lbardflags
+   fork %lbardC lbard "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" "$tty3" pull $lbardflags
+   fork %lbardD lbard "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" "$tty4" pull $lbardflags
+   fork %lbardE lbard "$addr_localhost:$PORTE" lbard:lbard "$SIDE" "$IDE" "$tty5" pull $lbardflags
+   fork %lbardF lbard "$addr_localhost:$PORTF" lbard:lbard "$SIDF" "$IDF" "$tty6" pull $lbardflags
+   fork %lbardG lbard "$addr_localhost:$PORTG" lbard:lbard "$SIDG" "$IDG" "$tty7" pull $lbardflags
+   fork %lbardH lbard "$addr_localhost:$PORTH" lbard:lbard "$SIDH" "$IDH" "$tty8" pull $lbardflags
+   fork %lbardI lbard "$addr_localhost:$PORTI" lbard:lbard "$SIDI" "$IDI" "$tty9" pull $lbardflags
+   fork %lbardJ lbard "$addr_localhost:$PORTJ" lbard:lbard "$SIDJ" "$IDJ" "$tty10" pull $lbardflags
+   fork %lbardK lbard "$addr_localhost:$PORTK" lbard:lbard "$SIDK" "$IDK" "$tty11" pull $lbardflags
+   fork %lbardL lbard "$addr_localhost:$PORTL" lbard:lbard "$SIDL" "$IDL" "$tty12" pull $lbardflags
+   fork %lbardM lbard "$addr_localhost:$PORTM" lbard:lbard "$SIDM" "$IDM" "$tty13" pull $lbardflags
+   fork %lbardN lbard "$addr_localhost:$PORTN" lbard:lbard "$SIDN" "$IDN" "$tty14" pull $lbardflags
+   fork %lbardO lbard "$addr_localhost:$PORTO" lbard:lbard "$SIDO" "$IDO" "$tty15" pull $lbardflags
+   fork %lbardP lbard "$addr_localhost:$PORTP" lbard:lbard "$SIDP" "$IDP" "$tty16" pull $lbardflags
+   fork %lbardQ lbard "$addr_localhost:$PORTQ" lbard:lbard "$SIDQ" "$IDQ" "$tty17" pull $lbardflags
+   fork %lbardR lbard "$addr_localhost:$PORTR" lbard:lbard "$SIDR" "$IDR" "$tty18" pull $lbardflags
+   fork %lbardS lbard "$addr_localhost:$PORTS" lbard:lbard "$SIDS" "$IDS" "$tty19" pull $lbardflags
+   fork %lbardT lbard "$addr_localhost:$PORTT" lbard:lbard "$SIDT" "$IDT" "$tty20" pull $lbardflags
+}
+
+configure_servald_server() {
+   # Do not configure any network interfaces.
+   executeOk_servald config \
+      set rhizome.http.enable 1 \
+      set api.restful.users.lbard.password lbard
+}
+
+teardown() {
+   stop_all_servald_servers
+   kill_all_servald_processes
+   assert_no_servald_processes
+   report_all_servald_servers
+}
+
+doc_DetectRFD900="LBARD detects RFD900 radios"
+setup_DetectRFD900() {
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio rfd900,rfd900,rfd900,rfd900 ttys.txt "$1"
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   # Start four lbard daemons.
+   set_instance +A
+   fork_lbard_console "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" "$tty1" pull
+   set_instance +B
+   fork_lbard_console "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" "$tty2" pull
+   set_instance +C
+   fork_lbard_console "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" "$tty3" pull
+   set_instance +D
+   fork_lbard_console "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" "$tty4" pull
+}
+test_DetectRFD900() {
+   # Test that all radios are detected
+   wait_until --timeout=10 grep "Radio is a rfd900" A_LBARDERR
+   wait_until --timeout=10 grep "Radio is a rfd900" B_LBARDERR
+   wait_until --timeout=10 grep "Radio is a rfd900" C_LBARDERR
+   wait_until --timeout=10 grep "Radio is a rfd900" D_LBARDERR
+
+   fork_terminate %lbardA %lbardB %lbardC %lbardD 
+   fork_terminate_all
+}
+
+doc_DetectCodanHF="LBARD detects Codan HF Radios"
+setup_DetectCodanHF() {
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio hfcodan,hfcodan,hfcodan,hfcodan ttys.txt "$1"
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   # Start four lbard daemons.
+   set_instance +A
+   fork_lbard_console "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" "$tty1" pull
+   set_instance +B
+   fork_lbard_console "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" "$tty2" pull
+   set_instance +C
+   fork_lbard_console "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" "$tty3" pull
+   set_instance +D
+   fork_lbard_console "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" "$tty4" pull
+}
+test_DetectCodanHF() {
+   # Test that all radios are detected
+   wait_until --timeout=10 grep "Codan HF Radio running CICS" A_LBARDERR
+   wait_until --timeout=10 grep "Codan HF Radio running CICS" B_LBARDERR
+   wait_until --timeout=10 grep "Codan HF Radio running CICS" C_LBARDERR
+   wait_until --timeout=10 grep "Codan HF Radio running CICS" D_LBARDERR
+
+   fork_terminate %lbardA %lbardB %lbardC %lbardD 
+   fork_terminate_all
+}
+
+
+doc_DetectBarrettHF="LBARD detects Barrett HF radios"
+setup_DetectBarrettHF() {
+   setup_bundles
+   start_instances hfbarrett,hfbarrett,hfbarrett,hfbarrett
+}
+test_DetectBarrettHF() {
+   # Test that all radios are detected
+   wait_until --timeout=10 grep "Detected Barrett HF Radio" A_LBARDERR
+   wait_until --timeout=10 grep "Detected Barrett HF Radio" B_LBARDERR
+   wait_until --timeout=10 grep "Detected Barrett HF Radio" C_LBARDERR
+   wait_until --timeout=10 grep "Detected Barrett HF Radio" D_LBARDERR
+
+   fork_terminate %lbardA %lbardB %lbardC %lbardD 
+   fork_terminate_all
+}
+
+doc_OuternetSetup="LBARD Outernet uplink mode starts up"
+setup_OuternetSetup() {
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio hfcodan,hfcodan,hfcodan,hfcodan ttys.txt "$1"
+   fork %fakeouternet fakeouternet 61001 $_tfw_tmp/outernetB.sock $_tfw_tmp/outernetC.sock $_tfw_tmp/outernetD.sock
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   # Start four lbard daemons.
+   set_instance +A
+   fork_lbard_console "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" outernet://127.0.0.1:20310 pull
+   set_instance +B
+   fork_lbard_console "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" "$tty2" pull
+   set_instance +C
+   fork_lbard_console "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" "$tty3" pull
+   set_instance +D
+   fork_lbard_console "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" "$tty4" pull
+}
+test_OuternetSetup() {
+   # Test that all radios are detected
+   wait_until --timeout=10 grep "Radio is a outernet (Outernet.is broadcast satellite)" A_LBARDERR
+   wait_until --timeout=10 grep "Codan HF Radio running CICS" B_LBARDERR
+   wait_until --timeout=10 grep "Codan HF Radio running CICS" C_LBARDERR
+   wait_until --timeout=10 grep "Codan HF Radio running CICS" D_LBARDERR
+
+   fork_terminate %lbardA %lbardB %lbardC %lbardD 
+   fork_terminate_all
+}
+
+doc_OuternetUplink100="LBARD uplinks ~260+100 byte bundle via Outernet gateway in < 1 minute"
+setup_OuternetUplink100() {
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio hfcodan,hfcodan,hfcodan,hfcodan ttys.txt "$1"
+   rm $_tfw_tmp/outernet.sock
+   fork %fakeouternet fakeouternet 61001 $_tfw_tmp/outernetB.sock $_tfw_tmp/outernetC.sock $_tfw_tmp/outernetD.sock
+   wait_until --timeout=15 eval [ `ls $_tfw_tmp/outernet.sock | wc -l` -ge 0 ]
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   # Start four lbard daemons, isolated from each other, with one as uplink to Outernet gateway
+   set_instance +A
+   fork_lbard_console "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" outernet://127.0.0.1:61001 pull
+   # Insert a file to server A, which we will want to see received by the others via Outernet interface
+   set_instance +A
+   rhizome_add_file file1 100
+   set_instance +B
+   fork_lbard_console "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" noradio "outernetrx=$_tfw_tmp/outernetB.sock" pull
+   set_instance +C
+   fork_lbard_console "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" noradio "outernetrx=$_tfw_tmp/outernetC.sock" pull
+   set_instance +D
+   fork_lbard_console "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" noradio "outernetrx=$_tfw_tmp/outernetD.sock" pull
+}
+test_OuternetUplink100() {
+   # Test that all radios are detected
+   set_instance +A
+   wait_until --timeout=20 grep "Radio is a outernet (Outernet.is broadcast satellite)" A_LBARDERR
+
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+      bundle_received_by $BID:$VERSION +C &&
+      bundle_received_by $BID:$VERSION +D
+   }
+   wait_until all_bundles_received
+
+   
+   fork_terminate %lbardA %lbardB %lbardC %lbardD 
+   fork_terminate_all
+}
+
+doc_OuternetUplink500="LBARD uplinks ~260+500 byte bundle via Outernet gateway in < 1 minute"
+setup_OuternetUplink500() {
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio hfcodan,hfcodan,hfcodan,hfcodan ttys.txt "$1"
+   rm $_tfw_tmp/outernet.sock
+   fork %fakeouternet fakeouternet 61001 $_tfw_tmp/outernetB.sock $_tfw_tmp/outernetC.sock $_tfw_tmp/outernetD.sock
+   wait_until --timeout=15 eval [ `ls $_tfw_tmp/outernet.sock | wc -l` -ge 0 ]
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   # Start four lbard daemons, isolated from each other, with one as uplink to Outernet gateway
+   set_instance +A
+   fork_lbard_console "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" outernet://127.0.0.1:61001 pull
+   # Insert a file to server A, which we will want to see received by the others via Outernet interface
+   set_instance +A
+   rhizome_add_file file1 500
+   set_instance +B
+   fork_lbard_console "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" noradio "outernetrx=$_tfw_tmp/outernetB.sock" pull
+   set_instance +C
+   fork_lbard_console "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" noradio "outernetrx=$_tfw_tmp/outernetC.sock" pull
+   set_instance +D
+   fork_lbard_console "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" noradio "outernetrx=$_tfw_tmp/outernetD.sock" pull
+}
+test_OuternetUplink500() {
+   # Test that all radios are detected
+   set_instance +A
+   wait_until --timeout=20 grep "Radio is a outernet (Outernet.is broadcast satellite)" A_LBARDERR
+
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+      bundle_received_by $BID:$VERSION +C &&
+      bundle_received_by $BID:$VERSION +D
+   }
+   wait_until all_bundles_received
+
+   
+   fork_terminate %lbardA %lbardB %lbardC %lbardD 
+   fork_terminate_all
+}
+
+doc_OuternetUplink1000="LBARD uplinks ~260+1000 byte bundle via Outernet gateway in < 2 minutes"
+setup_OuternetUplink1000() {
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio hfcodan,hfcodan,hfcodan,hfcodan ttys.txt "$1"
+   rm $_tfw_tmp/outernet.sock
+   fork %fakeouternet fakeouternet 61001 $_tfw_tmp/outernetB.sock $_tfw_tmp/outernetC.sock $_tfw_tmp/outernetD.sock
+   wait_until --timeout=15 eval [ `ls $_tfw_tmp/outernet.sock | wc -l` -ge 0 ]
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   # Start four lbard daemons, isolated from each other, with one as uplink to Outernet gateway
+   set_instance +A
+   fork_lbard_console "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" outernet://127.0.0.1:61001 pull
+   # Insert a file to server A, which we will want to see received by the others via Outernet interface
+   set_instance +A
+   rhizome_add_file file1 1000
+   set_instance +B
+   fork_lbard_console "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" noradio "outernetrx=$_tfw_tmp/outernetB.sock" pull
+   set_instance +C
+   fork_lbard_console "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" noradio "outernetrx=$_tfw_tmp/outernetC.sock" pull
+   set_instance +D
+   fork_lbard_console "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" noradio "outernetrx=$_tfw_tmp/outernetD.sock" pull
+}
+test_OuternetUplink1000() {
+   # Test that all radios are detected
+   set_instance +A
+   wait_until --timeout=20 grep "Radio is a outernet (Outernet.is broadcast satellite)" A_LBARDERR
+
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+      bundle_received_by $BID:$VERSION +C &&
+      bundle_received_by $BID:$VERSION +D
+   }
+   # Allow a little more time, since the bigger bundle will require a bit longer to transfer
+   wait_until --timeout=120 all_bundles_received
+   
+   fork_terminate %lbardA %lbardB %lbardC %lbardD 
+   fork_terminate_all
+}
+
+
+
+doc_OuternetUplink5="LBARD uplinks to Outernet gateway, five bundles at once"
+setup_OuternetUplink5() {
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio hfcodan,hfcodan,hfcodan,hfcodan ttys.txt "$1"
+   rm $_tfw_tmp/outernet.sock
+   fork %fakeouternet fakeouternet 61001 $_tfw_tmp/outernetB.sock $_tfw_tmp/outernetC.sock $_tfw_tmp/outernetD.sock
+   wait_until --timeout=15 eval [ `ls $_tfw_tmp/outernet.sock | wc -l` -ge 0 ]
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   # Start four lbard daemons, isolated from each other, with one as uplink to Outernet gateway
+   set_instance +A
+   fork_lbard_console "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$IDA" outernet://127.0.0.1:61001 pull
+   # Insert a file to server A, which we will want to see received by the others via Outernet interface
+   set_instance +A
+   rhizome_add_file file1 100
+   BIDA=$BID
+   VERSIONA=$VERSION
+   rhizome_add_file file2 100
+   BIDB=$BID
+   VERSIONB=$VERSION
+   rhizome_add_file file3 100
+   BIDC=$BID
+   VERSIONc=$VERSION
+   rhizome_add_file file4 100
+   BIDD=$BID
+   VERSIOND=$VERSION
+   rhizome_add_file file5 100
+   BIDe=$BID
+   VERSIONE=$VERSION
+   set_instance +B
+   fork_lbard_console "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$IDB" noradio "outernetrx=$_tfw_tmp/outernetB.sock" pull
+   set_instance +C
+   fork_lbard_console "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$IDC" noradio "outernetrx=$_tfw_tmp/outernetC.sock" pull
+   set_instance +D
+   fork_lbard_console "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$IDD" noradio "outernetrx=$_tfw_tmp/outernetD.sock" pull
+}
+test_OuternetUplink5() {
+   # Test that all radios are detected
+   set_instance +A
+   wait_until --timeout=20 grep "Radio is a outernet (Outernet.is broadcast satellite)" A_LBARDERR
+
+   all_bundles_received() {
+      bundle_received_by $BIDA:$VERSIONA +B &&
+      bundle_received_by $BIDA:$VERSIONA +C &&
+      bundle_received_by $BIDA:$VERSIONA +D &&
+      bundle_received_by $BIDB:$VERSIONB +B &&
+      bundle_received_by $BIDB:$VERSIONB +C &&
+      bundle_received_by $BIDB:$VERSIONB +D &&
+      bundle_received_by $BIDC:$VERSIONC +B &&
+      bundle_received_by $BIDC:$VERSIONC +C &&
+      bundle_received_by $BIDC:$VERSIONC +D &&
+      bundle_received_by $BIDD:$VERSIOND +B &&
+      bundle_received_by $BIDD:$VERSIOND +C &&
+      bundle_received_by $BIDD:$VERSIOND +D &&
+      bundle_received_by $BIDE:$VERSIONE +B &&
+      bundle_received_by $BIDE:$VERSIONE +C &&
+      bundle_received_by $BIDE:$VERSIONE +D
+   }
+   wait_until all_bundles_received
+
+   
+   fork_terminate %lbardA %lbardB %lbardC %lbardD 
+   fork_terminate_all
+}
+
+
+
+
+
+
+doc_OneOneHF="A single very small bundle transfers to a single peer via HF (timeout=10 minutes)"
+setup_OneOneHF() {
+   setup_DetectBarrettHF
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 50
+}
+test_OneOneHF() {
+   # Test that the bundle arrives at server B
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B 
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc=MeshMSViaHFWithOthers="A MeshMS conversation via HF, where both peers have a large number of bundles in common"
+setup_MeshMSViaHFWithOthers() {
+   # 1500 files in common, 0 unique files per instance, 25% packet loss
+   setup_bundles "0.25" 1500 0
+   # Then start with 4 Barrett HF radios
+   start_instances rfbarrett,rfbarrett,rfbarrett,rfbarrett
+}
+test_MessageDeliveryWithOthers() {
+    test_MessageDelivery 1800
+}
+
+
+doc_OneOne="A single very small bundle transfers to a single peer"
+setup_OneOne() {
+   setup "allow between 0,1; deny all;"
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 50
+}
+test_OneOne() {
+   # Test that the bundle arrives at server B
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B 
+   }
+   wait_until all_bundles_received
+}
+
+
+doc_One="A single very small bundle transfers to 3 peers"
+setup_One() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 50
+}
+test_One() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until all_bundles_received
+}
+
+doc_One20="A single very small bundle transfers to 19 peers"
+setup_One20() {
+   setup20
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 50
+}
+test_One20() {
+   # Test that the bundle arrives at servers B - T
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D &&
+         bundle_received_by $BID:$VERSION +E &&
+         bundle_received_by $BID:$VERSION +F &&
+         bundle_received_by $BID:$VERSION +G &&
+         bundle_received_by $BID:$VERSION +H &&
+         bundle_received_by $BID:$VERSION +I &&
+         bundle_received_by $BID:$VERSION +J &&
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until all_bundles_received
+}
+
+# ~150 bytes / sec * 50 seconds = ~9KB possible, less a bit for time redirecting around already received parts. 
+# XXX - If we made senders realise when they are already sending the same bundle to someone else, and use the
+# same offsets, we could obtain higher efficiency in transfer, and also reduce the number of segments during
+# reception.
+# For now, we have to be conservative, and just try 5KB in one minute.
+doc_One2K="A single 2KB bundle transfers to peers"
+setup_One2K() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 2048
+}
+test_One2K() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until all_bundles_received
+}
+
+doc_TwoSenders="A single bundle is offered by two senders"
+setup_TwoSenders() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   echo "Clear Text" >file1
+   echo -e "service=File\nsender=$SIDA\nrecipient=$SIDB" >file1.manifest
+   executeOk_servald rhizome add file $SIDA file1 file1.manifest
+   extract_manifest_id BID file1.manifest
+   extract_manifest_version VERSION file1.manifest
+   executeOk_servald rhizome export bundle $BID file1e.manifest file1e
+   set_instance +B
+   executeOk_servald rhizome import bundle file1e file1e.manifest
+}
+test_TwoSenders() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until all_bundles_received
+}
+
+rhizome_add_file_to_many() {
+    local name="$1"
+    shift
+    local size="$1"
+    shift
+    local first_instance="$1"
+    shift
+    set_instance "+$first_instance"
+    rhizome_add_file "$name" "$size"
+    # BID is in $BID from the above
+
+    # Now insert on each
+    replicate_bundle $BID $*
+
+    }
+
+replicate_bundle() {
+    local BID=$1
+    shift
+    executeOk_servald rhizome export bundle $BID file1e.manifest file1e
+    extract_manifest_version VERSION file1e.manifest
+    while [ x"$1" != "x" ]; do	
+	set_instance +$1
+	executeOk_servald rhizome import bundle file1e file1e.manifest
+	shift
+    done
+}
+
+
+doc_TwoSendersCombined="A bundle can be received by combining pieces from different senders"
+setup_TwoSendersCombined() {
+   setup "drop manifest from 0; drop body from 1;"
+   # Insert a file on server A and B
+   rhizome_add_file_to_many "test" 50 A B
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TwoSendersCombined() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until all_bundles_received
+}
+
+doc_TenSendersCombined="Ten receivers receive 6KB bundle from 10 senders in <2 minutes"
+setup_TenSendersCombined() {
+   setup20 "infinitespeed" 0 0 "flags=0"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=120 all_bundles_received
+}
+
+doc_NTenSendersCombined="One receiver receives a 16KB bundle from 19 senders in <2 minutes"
+setup_NTenSendersCombined() {
+   setup20
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 16384 A B C D E F G H I J K L M N O P Q R S
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_NTenSendersCombined() {
+   # Test that the bundle arrives at server T
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=120 all_bundles_received
+}
+
+
+doc_All="All peers receive bundles from all other peers"
+setup_All() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 50
+   BIDA=$BID
+   VERSIONA=$VERSION
+   # Insert a file to server B
+   set_instance +B
+   rhizome_add_file file2 51
+   BIDB=$BID
+   VERSIONB=$VERSION
+   # Insert a file to server C
+   set_instance +C
+   rhizome_add_file file3 52
+   BIDC=$BID
+   VERSIONC=$VERSION
+   # Insert a file to server D
+   set_instance +D
+   rhizome_add_file file4 53
+   BIDD=$BID
+   VERSIOND=$VERSION
+}
+test_All() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BIDA:$VERSIONA +B &&
+      bundle_received_by $BIDA:$VERSIONA +C &&
+      bundle_received_by $BIDA:$VERSIONA +D
+
+      bundle_received_by $BIDB:$VERSIONB +A &&
+      bundle_received_by $BIDB:$VERSIONB +C &&
+      bundle_received_by $BIDB:$VERSIONB +D
+
+      bundle_received_by $BIDC:$VERSIONC +A &&
+      bundle_received_by $BIDC:$VERSIONC +B &&
+      bundle_received_by $BIDC:$VERSIONC +D
+
+      bundle_received_by $BIDD:$VERSIOND +A &&
+      bundle_received_by $BIDD:$VERSIOND +B &&
+      bundle_received_by $BIDD:$VERSIOND +C
+   }
+   wait_until all_bundles_received
+}
+
+doc_MessageDelivery="Send messages, ack and read them in a 2 party conversation via UHF"
+setup_MessageDelivery() {
+   setup "0"
+}
+test_MessageDelivery() {
+
+    if [ "x$1" != "x" ]; then
+	maxwait=$1
+    else
+	maxwait=120
+    fi
+    
+   # 1. empty list
+   set_instance +A
+   executeOk_servald meshms list messages $SIDA $SIDB
+   assertStdoutIs --stdout --line=1 -e '6\n'
+   assertStdoutIs --stdout --line=2 -e '_id:my_offset:their_offset:age:type:message\n'
+   assertStdoutLineCount '==' 2
+
+   # 2. create a manifest with a single message, list it back and wait for delivery
+   set_instance +A
+   executeOk_servald meshms send message $SIDA $SIDB "Hi"
+   executeOk_servald rhizome list
+   b_receives_first_message() {
+       set_instance +B
+       executeOk_servald meshms list messages $SIDB $SIDA
+       if ! grep ":<:Hi\$" $_tfw_tmp/stdout; then
+	   return 1
+       fi
+   }   
+   wait_until --timeout=$maxwait b_receives_first_message
+   
+   # 3. append a second message and list them both
+   set_instance +A
+   executeOk_servald meshms send message $SIDA $SIDB "How are you"
+   executeOk_servald meshms list messages $SIDA $SIDB
+   tfw_cat --stdout
+   assertStdoutGrep --stdout --matches=1 ":>:How are you\$"
+   assertStdoutGrep --stdout --matches=1 ":>:Hi\$"
+   assertStdoutLineCount '==' 4
+   
+   # 4. list the messages from the receivers point of view (which ACKs them)
+   b_receives_second_message() {
+       set_instance +B
+       executeOk_servald meshms list messages $SIDB $SIDA
+       tfw_cat --stdout
+       if ! egrep "^0:[0-9]+:[0-9]+:[0-9]+:<:How are you\$" $_tfw_tmp/stdout; then
+	   return 1
+       fi
+       if ! egrep "^1:[0-9]+:[0-9]+:[0-9]+:<:Hi\$" $_tfw_tmp/stdout; then
+	   return 1;
+       fi
+   }
+   wait_until --timeout=$maxwait b_receives_second_message
+   
+   CONV_BID=$(replayStderr | sed -n -e '/MESHMS CONVERSATION BUNDLE/s/.*bid=\([0-9A-F]*\).*/\1/p')
+   CONV_SECRET=$(replayStderr | sed -n -e '/MESHMS CONVERSATION BUNDLE/s/.*secret=\([0-9A-F]*\).*/\1/p')
+   tfw_log "CONV_BID=$CONV_BID CONV_SECRET=$CONV_SECRET"
+   
+   # 5. mark the first message as read
+   set_instance +B
+   executeOk_servald meshms read messages $SIDB $SIDA 5
+   tfw_cat --stderr
+   executeOk_servald meshms list messages $SIDB $SIDA
+   assertStdoutGrep --stdout --matches=1 ":<:How are you\$"
+   assertStdoutEgrep --stdout --matches=1 ":5:[0-9]+:[0-9]+:MARK:read\$"
+   assertStdoutGrep --stdout --matches=1 ":<:Hi\$"
+   assertStdoutLineCount '==' 5
+   
+   # 6. mark all messages as read
+   set_instance +B
+   executeOk_servald meshms read messages $SIDB
+   executeOk_servald meshms list messages $SIDB $SIDA
+   assertStdoutEgrep --stdout --matches=1 "^0:25:[0-9]+:[0-9]+:MARK:read\$"
+   assertStdoutEgrep --stdout --matches=1 "^1:[0-9]+:25:[0-9]+:<:How are you\$"
+   assertStdoutEgrep --stdout --matches=1 "^2:[0-9]+:5:[0-9]+:<:Hi\$"
+   assertStdoutLineCount '==' 5
+   
+   # 7. list messages from the senders point of view after they have been delivered
+   a_receives_ACK_message() {
+       set_instance +A
+       executeOk_servald meshms list messages $SIDA $SIDB
+
+       tfw_cat --stdout
+       if ! egrep "^0:25:[0-9]+:[0-9]+:ACK:delivered\$" $_tfw_tmp/stdout; then
+	   return 1;
+       fi
+       if ! egrep "^1:25:0:[0-9]+:>:How are you\$" $_tfw_tmp/stdout; then
+	   return 1
+       fi
+       if ! egrep "^2:5:0:[0-9]+:>:Hi\$" $_tfw_tmp/stdout; then
+	   return 1;
+       fi
+       assertStdoutLineCount '==' 5
+   }
+   wait_until  --timeout=$maxwait a_receives_ACK_message
+}
+
+doc_MessageDeliveryLoss="Two party MeshMS conversation via UHF with 75% packet loss"
+setup_MessageDeliveryLoss() {
+   setup "0.75"
+}
+test_MessageDeliveryLoss() {
+    test_MessageDelivery 180
+}
+
+doc_MessageDeliveryWithOthers="MeshMS conversation via UHF with other bundles held and 25% packet loss"
+setup_MessageDeliveryWithOthers() {
+    # 1500 files in common, 0 unique files per instance, 25% packet loss
+   setup "0.25" 1500 0
+}
+test_MessageDeliveryWithOthers() {
+    test_MessageDelivery 120
+}
+
+doc_MessageDeliveryWithTraffic="MeshMS conversation via UHF with other bundles in flight and 25% packet loss"
+setup_MessageDeliveryWithTraffic() {
+    # 1500 files in common, 0 unique files per instance, 25% packet loss
+   setup "0.25" 1500 100
+}
+test_MessageDeliveryWithTraffic() {
+    test_MessageDelivery 120
+}
+
+doc_MessageDeliveryThreeHops="MeshMS conversation via UHF, via two intermediate UHF hops"
+setup_MessageDeliveryThreeHops() {
+    # For simplicity the conversation is still from A->B, i.e., 0 to 1. Thus we route A->C->D->B and vice versa
+    # We want to allow 0->3->2->1 only
+   setup "allow between 0,3; allow between 3,2; allow between 2,1; deny all;"
+}
+test_MessageDeliveryThreeHops() {
+    test_MessageDelivery 180
+}
+
+
+doc_FileDeliveryThreeHops="5K file delivery, via two intermediate UHF hops"
+setup_FileDeliveryThreeHops() {
+    # We want to allow 0->3->2->1 only
+    setup "allow between 0,3; allow between 3,2; allow between 2,1; deny all;"
+    rhizome_add_file_to_many "test" 5000 A
+    BID=`echo $BID | cut -f1 -d:`
+}
+test_FileDeliveryThreeHops() {
+   # Test that the bundle arrives at server T
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +B
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_FileDeliveryThreeHops15="5K file delivery, via two intermediate UHF hops, disable all improvements"
+setup_FileDeliveryThreeHops15() {
+    # We want to allow 0->3->2->1 only
+    setup "allow between 0,3; allow between 3,2; allow between 2,1; deny all;" 0 0 "flags=15"
+    rhizome_add_file_to_many "test" 5000 A
+    BID=`echo $BID | cut -f1 -d:`
+}
+test_FileDeliveryThreeHops15() {
+   # Test that the bundle arrives at server T
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +B
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined1="Ten receivers receive 6KB bundle from 10 senders, disable randomise redirect offset"
+setup_TenSendersCombined1() {
+   setup20 "infinitespeed" 0 0 "flags=1"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined1() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined2="Ten receivers receive 6KB bundle from 10 senders, disable randomise start offset"
+setup_TenSendersCombined2() {
+   setup20 "infinitespeed" 0 0 "flags=2"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined2() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined3="Ten receivers receive 6KB bundle from 10 senders, disable randomise start and redirect offsets"
+setup_TenSendersCombined3() {
+   setup20 "infinitespeed" 0 0 "flags=3"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined3() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined4="Ten receivers receive 6KB bundle from 10 senders, disable bitmap tranfsers"
+setup_TenSendersCombined4() {
+   setup20 "infinitespeed" 0 0 "flags=4"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined4() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined5="Ten receivers receive 6KB bundle from 10 senders, disable bitmap transfers and randomised redirection"
+setup_TenSendersCombined5() {
+   setup20 "infinitespeed" 0 0 "flags=5"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined5() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined6="Ten receivers receive 6KB bundle from 10 senders, disable bitmap transfers and randomised start offsets"
+setup_TenSendersCombined6() {
+   setup20 "infinitespeed" 0 0 "flags=6"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined6() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined7="Ten receivers receive 6KB bundle from 10 senders, disable bitmap transfers and randomised start and redirection offsets"
+setup_TenSendersCombined7() {
+   setup20 "infinitespeed" 0 0 "flags=7"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined7() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined8="Ten receivers receive 6KB bundle from 10 senders, disable hard lower bound advancing"
+setup_TenSendersCombined8() {
+   setup20 "infinitespeed" 0 0 "flags=8"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined8() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined9="Ten receivers receive 6KB bundle from 10 senders, disable hard lower bound advancing and randomisation of redirection offset"
+setup_TenSendersCombined9() {
+   setup20 "infinitespeed" 0 0 "flags=9"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined9() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined10="Ten receivers receive 6KB bundle from 10 senders, disable hard lower bound advancing and randomisation of start offset"
+setup_TenSendersCombined10() {
+   setup20 "infinitespeed" 0 0 "flags=10"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined10() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined11="Ten receivers receive 6KB bundle from 10 senders, disable hard lower bound advancing and randomisation of start and redirection offsets"
+setup_TenSendersCombined11() {
+   setup20 "infinitespeed" 0 0 "flags=11"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined11() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined12="Ten receivers receive 6KB bundle from 10 senders, disable hard lower bound advancing and bitmap transfers"
+setup_TenSendersCombined12() {
+   setup20 "infinitespeed" 0 0 "flags=12"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined12() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined13="Ten receivers receive 6KB bundle from 10 senders, disable hard lower bound advancing, bitmap transfers and randomisation of redirection offset"
+setup_TenSendersCombined13() {
+   setup20 "infinitespeed" 0 0 "flags=13"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined13() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined14="Ten receivers receive 6KB bundle from 10 senders, disable hard lower bound advancing, bitmap transfers and randomisation of start offset"
+setup_TenSendersCombined14() {
+   setup20 "infinitespeed" 0 0 "flags=14"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined14() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_TenSendersCombined15="Ten receivers receive 6KB bundle from 10 senders, disable all improvements"
+setup_TenSendersCombined15() {
+   setup20 "infinitespeed" 0 0 "flags=15"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_TenSendersCombined15() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=900 all_bundles_received
+}
+
+doc_PacketRate5="Ten receivers and ten senders, 5 packets each per 4 seconds"
+setup_PacketRate5() {
+   setup20 "" 0 0 "packetrate=5"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate5() {
+   # Test that the bundle arrives at server K
+   all_bundles_received() {
+         bundle_received_by $BID:$VERSION +K &&
+         bundle_received_by $BID:$VERSION +L &&
+         bundle_received_by $BID:$VERSION +M &&
+         bundle_received_by $BID:$VERSION +N &&
+         bundle_received_by $BID:$VERSION +O &&
+         bundle_received_by $BID:$VERSION +P &&
+         bundle_received_by $BID:$VERSION +Q &&
+         bundle_received_by $BID:$VERSION +R &&
+         bundle_received_by $BID:$VERSION +S &&
+         bundle_received_by $BID:$VERSION +T
+   }
+   wait_until --timeout=120 all_bundles_received
+}
+
+doc_PacketRate10="Ten receivers and ten senders, 10 packets each per 4 seconds"
+setup_PacketRate10() {
+   setup20 "" 0 0 "packetrate=10"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate10() {
+    test_PacketRate5
+}
+
+
+doc_PacketRate15="Ten receivers and ten senders, 15 packets each per 4 seconds"
+setup_PacketRate15() {
+   setup20 "" 0 0 "packetrate=15"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate15() {
+    test_PacketRate5
+}
+
+
+doc_PacketRate20="Ten receivers and ten senders, 20 packets each per 4 seconds"
+setup_PacketRate20() {
+   setup20 "" 0 0 "packetrate=20"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate20() {
+    test_PacketRate5
+
+}
+
+
+doc_PacketRate25="Ten receivers and ten senders, 25 packets each per 4 seconds"
+setup_PacketRate25() {
+   setup20 "" 0 0 "packetrate=25"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate25() {
+    test_PacketRate5
+
+}
+
+
+doc_PacketRate30="Ten receivers and ten senders, 30 packets each per 4 seconds"
+setup_PacketRate30() {
+   setup20 "" 0 0 "packetrate=30"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate30() {
+    test_PacketRate5
+
+}
+
+
+doc_PacketRate40="Ten receivers and ten senders, 40 packets each per 4 seconds"
+setup_PacketRate40() {
+   setup20 "" 0 0 "packetrate=40"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate40() {
+    test_PacketRate5
+
+}
+
+
+doc_PacketRate50="Ten receivers and ten senders, 50 packets each per 4 seconds"
+setup_PacketRate50() {
+   setup20 "" 0 0 "packetrate=50"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate50() {
+    test_PacketRate5
+
+}
+
+
+doc_PacketRate60="Ten receivers and ten senders, 60 packets each per 4 seconds"
+setup_PacketRate60() {
+   setup20 "" 0 0 "packetrate=60"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate60() {
+     test_PacketRate5
+
+}
+
+doc_PacketRate70="Ten receivers and ten senders, 70 packets each per 4 seconds"
+setup_PacketRate70() {
+   setup20 "" 0 0 "packetrate=70"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate70() {
+    test_PacketRate5
+
+}
+
+doc_PacketRate80="Ten receivers and ten senders, 80 packets each per 4 seconds"
+setup_PacketRate80() {
+   setup20 "" 0 0 "packetrate=80"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate80() {
+    test_PacketRate5
+
+}
+
+doc_PacketRate90="Ten receivers and ten senders, 90 packets each per 4 seconds"
+setup_PacketRate90() {
+   setup20 "" 0 0 "packetrate=90"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate90() {
+    test_PacketRate5
+
+}
+
+doc_PacketRate100="Ten receivers and ten senders, 100 packets each per 4 seconds"
+setup_PacketRate100() {
+   setup20 "" 0 0 "packetrate=100"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate100() {
+    test_PacketRate5
+
+}
+
+doc_PacketRate110="Ten receivers and ten senders, 110 packets each per 4 seconds"
+setup_PacketRate110() {
+   setup20 "" 0 0 "packetrate=110"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate110() {
+    test_PacketRate5
+
+}
+
+doc_PacketRate200="Ten receivers and ten senders, 200 packets each per 4 seconds"
+setup_PacketRate200() {
+   setup20 "" 0 0 "packetrate=200"
+   # Insert a file on server A - J
+   # Make file too big to be sent in 60 seconds by only one server
+   # 60 sec * 200 bytes / sec = 12000 bytes
+   # (reduce to 75% since we have ten receivers)
+   rhizome_add_file_to_many "test" 6000 A B C D E F G H I J 
+   BID=`echo $BID | cut -f1 -d:`
+}
+test_PacketRate200() {
+    test_PacketRate5
+
+}
+
+
+runTests "$@"

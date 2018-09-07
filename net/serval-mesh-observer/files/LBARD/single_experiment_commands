@@ -1,0 +1,25 @@
+#!/bin/sh
+echo "Starting experiment..."
+sleep 3
+screen -S experiment -X screen 2 `pwd`/fakecsmaradio rfd900,rfd900,rfd900,rfd900 ttys.txt
+screen -S experiment -X select 2
+`pwd`/testing/stop-all
+`pwd`/testing/start-all $1
+rm bundles_received.log
+touch bundles_received.log
+screen -S experiment -X screen 3 `pwd`/testing/runanlbard 1 $2
+screen -S experiment -X screen 4 `pwd`/testing/runanlbard 2 $2
+screen -S experiment -X select 0
+screen -S experiment -X windows
+while true; do
+  date
+  cat bundles_received.log
+  matches=`grep :from1:4 bundles_received.log | wc -l`
+  if [ $matches -gt 0 ]; then
+    echo "Bundle received."
+    grep :from1:4 bundles_received.log
+    cp bundles_received.log priority_experiment.$1.$2.log
+    screen -S experiment -X quit
+  fi
+  sleep 5
+done

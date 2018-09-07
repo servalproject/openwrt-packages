@@ -1,0 +1,3820 @@
+#!/bin/bash
+
+# Tests for Serval LBARD
+#
+# Copyright 2016 Serval Project, Inc.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+source "${0%/*}/../serval-dna/testframework.sh"
+source "${0%/*}/../testdefs.sh"
+
+setup() {
+   # Configure four servald daemons without any interfaces connecting them, and
+   # start them running.
+   setup_servald
+   assert_no_servald_processes
+   foreach_instance +A +B +C +D create_single_identity
+   foreach_instance +A +B +C +D start_servald_server
+   get_servald_restful_http_server_port PORTA +A
+   get_servald_restful_http_server_port PORTB +B
+   get_servald_restful_http_server_port PORTC +C
+   get_servald_restful_http_server_port PORTD +D
+   # Start the fake radio daemon.
+   fork %fakeradio fakecsmaradio 4 ttys.txt
+   wait_until --timeout=15 eval [ '$(cat ttys.txt | wc -l)' -ge 4 ]
+   tty1=$(sed -n 1p ttys.txt)
+   tty2=$(sed -n 2p ttys.txt)
+   tty3=$(sed -n 3p ttys.txt)
+   tty4=$(sed -n 4p ttys.txt)
+   # Start four lbard daemons.
+   fork %lbardA lbard "$addr_localhost:$PORTA" lbard:lbard "$SIDA" "$tty1" announce pull
+   fork %lbardB lbard "$addr_localhost:$PORTB" lbard:lbard "$SIDB" "$tty2" pull
+   fork %lbardC lbard "$addr_localhost:$PORTC" lbard:lbard "$SIDC" "$tty3" pull
+   fork %lbardD lbard "$addr_localhost:$PORTD" lbard:lbard "$SIDD" "$tty4" pull
+}
+
+configure_servald_server() {
+   # Do not configure any network interfaces.
+   executeOk_servald config \
+      set rhizome.http.enable 1 \
+      set api.restful.users.lbard.password lbard
+}
+
+teardown() {
+   stop_all_servald_servers
+   kill_all_servald_processes
+   assert_no_servald_processes
+   report_all_servald_servers
+}
+
+
+doc_modulo6000="Can insert bundle with size = 6000 modulo 8192"
+setup_modulo6000() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6000
+}
+test_modulo6000() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6010="Can insert bundle with size = 6010 modulo 8192"
+setup_modulo6010() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6010
+}
+test_modulo6010() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6020="Can insert bundle with size = 6020 modulo 8192"
+setup_modulo6020() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6020
+}
+test_modulo6020() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6030="Can insert bundle with size = 6030 modulo 8192"
+setup_modulo6030() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6030
+}
+test_modulo6030() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6040="Can insert bundle with size = 6040 modulo 8192"
+setup_modulo6040() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6040
+}
+test_modulo6040() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6050="Can insert bundle with size = 6050 modulo 8192"
+setup_modulo6050() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6050
+}
+test_modulo6050() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6060="Can insert bundle with size = 6060 modulo 8192"
+setup_modulo6060() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6060
+}
+test_modulo6060() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6070="Can insert bundle with size = 6070 modulo 8192"
+setup_modulo6070() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6070
+}
+test_modulo6070() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6080="Can insert bundle with size = 6080 modulo 8192"
+setup_modulo6080() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6080
+}
+test_modulo6080() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6090="Can insert bundle with size = 6090 modulo 8192"
+setup_modulo6090() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6090
+}
+test_modulo6090() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6100="Can insert bundle with size = 6100 modulo 8192"
+setup_modulo6100() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6100
+}
+test_modulo6100() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6110="Can insert bundle with size = 6110 modulo 8192"
+setup_modulo6110() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6110
+}
+test_modulo6110() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6120="Can insert bundle with size = 6120 modulo 8192"
+setup_modulo6120() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6120
+}
+test_modulo6120() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6130="Can insert bundle with size = 6130 modulo 8192"
+setup_modulo6130() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6130
+}
+test_modulo6130() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6140="Can insert bundle with size = 6140 modulo 8192"
+setup_modulo6140() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6140
+}
+test_modulo6140() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6150="Can insert bundle with size = 6150 modulo 8192"
+setup_modulo6150() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6150
+}
+test_modulo6150() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6160="Can insert bundle with size = 6160 modulo 8192"
+setup_modulo6160() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6160
+}
+test_modulo6160() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6170="Can insert bundle with size = 6170 modulo 8192"
+setup_modulo6170() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6170
+}
+test_modulo6170() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6180="Can insert bundle with size = 6180 modulo 8192"
+setup_modulo6180() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6180
+}
+test_modulo6180() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6190="Can insert bundle with size = 6190 modulo 8192"
+setup_modulo6190() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6190
+}
+test_modulo6190() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6200="Can insert bundle with size = 6200 modulo 8192"
+setup_modulo6200() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6200
+}
+test_modulo6200() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6210="Can insert bundle with size = 6210 modulo 8192"
+setup_modulo6210() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6210
+}
+test_modulo6210() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6220="Can insert bundle with size = 6220 modulo 8192"
+setup_modulo6220() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6220
+}
+test_modulo6220() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6230="Can insert bundle with size = 6230 modulo 8192"
+setup_modulo6230() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6230
+}
+test_modulo6230() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6240="Can insert bundle with size = 6240 modulo 8192"
+setup_modulo6240() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6240
+}
+test_modulo6240() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6250="Can insert bundle with size = 6250 modulo 8192"
+setup_modulo6250() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6250
+}
+test_modulo6250() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6260="Can insert bundle with size = 6260 modulo 8192"
+setup_modulo6260() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6260
+}
+test_modulo6260() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6270="Can insert bundle with size = 6270 modulo 8192"
+setup_modulo6270() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6270
+}
+test_modulo6270() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6280="Can insert bundle with size = 6280 modulo 8192"
+setup_modulo6280() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6280
+}
+test_modulo6280() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6290="Can insert bundle with size = 6290 modulo 8192"
+setup_modulo6290() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6290
+}
+test_modulo6290() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6300="Can insert bundle with size = 6300 modulo 8192"
+setup_modulo6300() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6300
+}
+test_modulo6300() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6310="Can insert bundle with size = 6310 modulo 8192"
+setup_modulo6310() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6310
+}
+test_modulo6310() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6320="Can insert bundle with size = 6320 modulo 8192"
+setup_modulo6320() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6320
+}
+test_modulo6320() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6330="Can insert bundle with size = 6330 modulo 8192"
+setup_modulo6330() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6330
+}
+test_modulo6330() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6340="Can insert bundle with size = 6340 modulo 8192"
+setup_modulo6340() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6340
+}
+test_modulo6340() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6350="Can insert bundle with size = 6350 modulo 8192"
+setup_modulo6350() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6350
+}
+test_modulo6350() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6360="Can insert bundle with size = 6360 modulo 8192"
+setup_modulo6360() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6360
+}
+test_modulo6360() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6370="Can insert bundle with size = 6370 modulo 8192"
+setup_modulo6370() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6370
+}
+test_modulo6370() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6380="Can insert bundle with size = 6380 modulo 8192"
+setup_modulo6380() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6380
+}
+test_modulo6380() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6390="Can insert bundle with size = 6390 modulo 8192"
+setup_modulo6390() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6390
+}
+test_modulo6390() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6400="Can insert bundle with size = 6400 modulo 8192"
+setup_modulo6400() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6400
+}
+test_modulo6400() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6410="Can insert bundle with size = 6410 modulo 8192"
+setup_modulo6410() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6410
+}
+test_modulo6410() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6420="Can insert bundle with size = 6420 modulo 8192"
+setup_modulo6420() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6420
+}
+test_modulo6420() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6430="Can insert bundle with size = 6430 modulo 8192"
+setup_modulo6430() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6430
+}
+test_modulo6430() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6440="Can insert bundle with size = 6440 modulo 8192"
+setup_modulo6440() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6440
+}
+test_modulo6440() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6450="Can insert bundle with size = 6450 modulo 8192"
+setup_modulo6450() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6450
+}
+test_modulo6450() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6460="Can insert bundle with size = 6460 modulo 8192"
+setup_modulo6460() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6460
+}
+test_modulo6460() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6470="Can insert bundle with size = 6470 modulo 8192"
+setup_modulo6470() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6470
+}
+test_modulo6470() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6480="Can insert bundle with size = 6480 modulo 8192"
+setup_modulo6480() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6480
+}
+test_modulo6480() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6490="Can insert bundle with size = 6490 modulo 8192"
+setup_modulo6490() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6490
+}
+test_modulo6490() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6500="Can insert bundle with size = 6500 modulo 8192"
+setup_modulo6500() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6500
+}
+test_modulo6500() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6510="Can insert bundle with size = 6510 modulo 8192"
+setup_modulo6510() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6510
+}
+test_modulo6510() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6520="Can insert bundle with size = 6520 modulo 8192"
+setup_modulo6520() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6520
+}
+test_modulo6520() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6530="Can insert bundle with size = 6530 modulo 8192"
+setup_modulo6530() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6530
+}
+test_modulo6530() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6540="Can insert bundle with size = 6540 modulo 8192"
+setup_modulo6540() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6540
+}
+test_modulo6540() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6550="Can insert bundle with size = 6550 modulo 8192"
+setup_modulo6550() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6550
+}
+test_modulo6550() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6560="Can insert bundle with size = 6560 modulo 8192"
+setup_modulo6560() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6560
+}
+test_modulo6560() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6570="Can insert bundle with size = 6570 modulo 8192"
+setup_modulo6570() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6570
+}
+test_modulo6570() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6580="Can insert bundle with size = 6580 modulo 8192"
+setup_modulo6580() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6580
+}
+test_modulo6580() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6590="Can insert bundle with size = 6590 modulo 8192"
+setup_modulo6590() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6590
+}
+test_modulo6590() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6600="Can insert bundle with size = 6600 modulo 8192"
+setup_modulo6600() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6600
+}
+test_modulo6600() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6610="Can insert bundle with size = 6610 modulo 8192"
+setup_modulo6610() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6610
+}
+test_modulo6610() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6620="Can insert bundle with size = 6620 modulo 8192"
+setup_modulo6620() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6620
+}
+test_modulo6620() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6630="Can insert bundle with size = 6630 modulo 8192"
+setup_modulo6630() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6630
+}
+test_modulo6630() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6640="Can insert bundle with size = 6640 modulo 8192"
+setup_modulo6640() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6640
+}
+test_modulo6640() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6650="Can insert bundle with size = 6650 modulo 8192"
+setup_modulo6650() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6650
+}
+test_modulo6650() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6660="Can insert bundle with size = 6660 modulo 8192"
+setup_modulo6660() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6660
+}
+test_modulo6660() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6670="Can insert bundle with size = 6670 modulo 8192"
+setup_modulo6670() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6670
+}
+test_modulo6670() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6680="Can insert bundle with size = 6680 modulo 8192"
+setup_modulo6680() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6680
+}
+test_modulo6680() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6690="Can insert bundle with size = 6690 modulo 8192"
+setup_modulo6690() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6690
+}
+test_modulo6690() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6700="Can insert bundle with size = 6700 modulo 8192"
+setup_modulo6700() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6700
+}
+test_modulo6700() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6710="Can insert bundle with size = 6710 modulo 8192"
+setup_modulo6710() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6710
+}
+test_modulo6710() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6720="Can insert bundle with size = 6720 modulo 8192"
+setup_modulo6720() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6720
+}
+test_modulo6720() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6730="Can insert bundle with size = 6730 modulo 8192"
+setup_modulo6730() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6730
+}
+test_modulo6730() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6740="Can insert bundle with size = 6740 modulo 8192"
+setup_modulo6740() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6740
+}
+test_modulo6740() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6750="Can insert bundle with size = 6750 modulo 8192"
+setup_modulo6750() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6750
+}
+test_modulo6750() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6760="Can insert bundle with size = 6760 modulo 8192"
+setup_modulo6760() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6760
+}
+test_modulo6760() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6770="Can insert bundle with size = 6770 modulo 8192"
+setup_modulo6770() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6770
+}
+test_modulo6770() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6780="Can insert bundle with size = 6780 modulo 8192"
+setup_modulo6780() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6780
+}
+test_modulo6780() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6790="Can insert bundle with size = 6790 modulo 8192"
+setup_modulo6790() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6790
+}
+test_modulo6790() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6800="Can insert bundle with size = 6800 modulo 8192"
+setup_modulo6800() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6800
+}
+test_modulo6800() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6810="Can insert bundle with size = 6810 modulo 8192"
+setup_modulo6810() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6810
+}
+test_modulo6810() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6820="Can insert bundle with size = 6820 modulo 8192"
+setup_modulo6820() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6820
+}
+test_modulo6820() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6830="Can insert bundle with size = 6830 modulo 8192"
+setup_modulo6830() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6830
+}
+test_modulo6830() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6840="Can insert bundle with size = 6840 modulo 8192"
+setup_modulo6840() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6840
+}
+test_modulo6840() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6850="Can insert bundle with size = 6850 modulo 8192"
+setup_modulo6850() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6850
+}
+test_modulo6850() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6860="Can insert bundle with size = 6860 modulo 8192"
+setup_modulo6860() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6860
+}
+test_modulo6860() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6870="Can insert bundle with size = 6870 modulo 8192"
+setup_modulo6870() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6870
+}
+test_modulo6870() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6880="Can insert bundle with size = 6880 modulo 8192"
+setup_modulo6880() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6880
+}
+test_modulo6880() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6890="Can insert bundle with size = 6890 modulo 8192"
+setup_modulo6890() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6890
+}
+test_modulo6890() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6900="Can insert bundle with size = 6900 modulo 8192"
+setup_modulo6900() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6900
+}
+test_modulo6900() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6910="Can insert bundle with size = 6910 modulo 8192"
+setup_modulo6910() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6910
+}
+test_modulo6910() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6920="Can insert bundle with size = 6920 modulo 8192"
+setup_modulo6920() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6920
+}
+test_modulo6920() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6930="Can insert bundle with size = 6930 modulo 8192"
+setup_modulo6930() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6930
+}
+test_modulo6930() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6940="Can insert bundle with size = 6940 modulo 8192"
+setup_modulo6940() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6940
+}
+test_modulo6940() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6950="Can insert bundle with size = 6950 modulo 8192"
+setup_modulo6950() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6950
+}
+test_modulo6950() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6960="Can insert bundle with size = 6960 modulo 8192"
+setup_modulo6960() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6960
+}
+test_modulo6960() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6970="Can insert bundle with size = 6970 modulo 8192"
+setup_modulo6970() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6970
+}
+test_modulo6970() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6980="Can insert bundle with size = 6980 modulo 8192"
+setup_modulo6980() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6980
+}
+test_modulo6980() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo6990="Can insert bundle with size = 6990 modulo 8192"
+setup_modulo6990() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 6990
+}
+test_modulo6990() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7000="Can insert bundle with size = 7000 modulo 8192"
+setup_modulo7000() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7000
+}
+test_modulo7000() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7010="Can insert bundle with size = 7010 modulo 8192"
+setup_modulo7010() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7010
+}
+test_modulo7010() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7020="Can insert bundle with size = 7020 modulo 8192"
+setup_modulo7020() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7020
+}
+test_modulo7020() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7030="Can insert bundle with size = 7030 modulo 8192"
+setup_modulo7030() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7030
+}
+test_modulo7030() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7040="Can insert bundle with size = 7040 modulo 8192"
+setup_modulo7040() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7040
+}
+test_modulo7040() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7050="Can insert bundle with size = 7050 modulo 8192"
+setup_modulo7050() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7050
+}
+test_modulo7050() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7060="Can insert bundle with size = 7060 modulo 8192"
+setup_modulo7060() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7060
+}
+test_modulo7060() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7070="Can insert bundle with size = 7070 modulo 8192"
+setup_modulo7070() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7070
+}
+test_modulo7070() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7080="Can insert bundle with size = 7080 modulo 8192"
+setup_modulo7080() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7080
+}
+test_modulo7080() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7090="Can insert bundle with size = 7090 modulo 8192"
+setup_modulo7090() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7090
+}
+test_modulo7090() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7100="Can insert bundle with size = 7100 modulo 8192"
+setup_modulo7100() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7100
+}
+test_modulo7100() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7110="Can insert bundle with size = 7110 modulo 8192"
+setup_modulo7110() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7110
+}
+test_modulo7110() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7120="Can insert bundle with size = 7120 modulo 8192"
+setup_modulo7120() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7120
+}
+test_modulo7120() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7130="Can insert bundle with size = 7130 modulo 8192"
+setup_modulo7130() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7130
+}
+test_modulo7130() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7140="Can insert bundle with size = 7140 modulo 8192"
+setup_modulo7140() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7140
+}
+test_modulo7140() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7150="Can insert bundle with size = 7150 modulo 8192"
+setup_modulo7150() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7150
+}
+test_modulo7150() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7160="Can insert bundle with size = 7160 modulo 8192"
+setup_modulo7160() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7160
+}
+test_modulo7160() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7170="Can insert bundle with size = 7170 modulo 8192"
+setup_modulo7170() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7170
+}
+test_modulo7170() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7180="Can insert bundle with size = 7180 modulo 8192"
+setup_modulo7180() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7180
+}
+test_modulo7180() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7190="Can insert bundle with size = 7190 modulo 8192"
+setup_modulo7190() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7190
+}
+test_modulo7190() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7200="Can insert bundle with size = 7200 modulo 8192"
+setup_modulo7200() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7200
+}
+test_modulo7200() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7210="Can insert bundle with size = 7210 modulo 8192"
+setup_modulo7210() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7210
+}
+test_modulo7210() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7220="Can insert bundle with size = 7220 modulo 8192"
+setup_modulo7220() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7220
+}
+test_modulo7220() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7230="Can insert bundle with size = 7230 modulo 8192"
+setup_modulo7230() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7230
+}
+test_modulo7230() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7240="Can insert bundle with size = 7240 modulo 8192"
+setup_modulo7240() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7240
+}
+test_modulo7240() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7250="Can insert bundle with size = 7250 modulo 8192"
+setup_modulo7250() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7250
+}
+test_modulo7250() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7260="Can insert bundle with size = 7260 modulo 8192"
+setup_modulo7260() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7260
+}
+test_modulo7260() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7270="Can insert bundle with size = 7270 modulo 8192"
+setup_modulo7270() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7270
+}
+test_modulo7270() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7280="Can insert bundle with size = 7280 modulo 8192"
+setup_modulo7280() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7280
+}
+test_modulo7280() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7290="Can insert bundle with size = 7290 modulo 8192"
+setup_modulo7290() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7290
+}
+test_modulo7290() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7300="Can insert bundle with size = 7300 modulo 8192"
+setup_modulo7300() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7300
+}
+test_modulo7300() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7310="Can insert bundle with size = 7310 modulo 8192"
+setup_modulo7310() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7310
+}
+test_modulo7310() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7320="Can insert bundle with size = 7320 modulo 8192"
+setup_modulo7320() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7320
+}
+test_modulo7320() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7330="Can insert bundle with size = 7330 modulo 8192"
+setup_modulo7330() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7330
+}
+test_modulo7330() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7340="Can insert bundle with size = 7340 modulo 8192"
+setup_modulo7340() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7340
+}
+test_modulo7340() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7350="Can insert bundle with size = 7350 modulo 8192"
+setup_modulo7350() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7350
+}
+test_modulo7350() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7360="Can insert bundle with size = 7360 modulo 8192"
+setup_modulo7360() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7360
+}
+test_modulo7360() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7370="Can insert bundle with size = 7370 modulo 8192"
+setup_modulo7370() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7370
+}
+test_modulo7370() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7380="Can insert bundle with size = 7380 modulo 8192"
+setup_modulo7380() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7380
+}
+test_modulo7380() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7390="Can insert bundle with size = 7390 modulo 8192"
+setup_modulo7390() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7390
+}
+test_modulo7390() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7400="Can insert bundle with size = 7400 modulo 8192"
+setup_modulo7400() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7400
+}
+test_modulo7400() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7410="Can insert bundle with size = 7410 modulo 8192"
+setup_modulo7410() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7410
+}
+test_modulo7410() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7420="Can insert bundle with size = 7420 modulo 8192"
+setup_modulo7420() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7420
+}
+test_modulo7420() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7430="Can insert bundle with size = 7430 modulo 8192"
+setup_modulo7430() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7430
+}
+test_modulo7430() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7440="Can insert bundle with size = 7440 modulo 8192"
+setup_modulo7440() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7440
+}
+test_modulo7440() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7450="Can insert bundle with size = 7450 modulo 8192"
+setup_modulo7450() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7450
+}
+test_modulo7450() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7460="Can insert bundle with size = 7460 modulo 8192"
+setup_modulo7460() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7460
+}
+test_modulo7460() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7470="Can insert bundle with size = 7470 modulo 8192"
+setup_modulo7470() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7470
+}
+test_modulo7470() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7480="Can insert bundle with size = 7480 modulo 8192"
+setup_modulo7480() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7480
+}
+test_modulo7480() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7490="Can insert bundle with size = 7490 modulo 8192"
+setup_modulo7490() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7490
+}
+test_modulo7490() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7500="Can insert bundle with size = 7500 modulo 8192"
+setup_modulo7500() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7500
+}
+test_modulo7500() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7510="Can insert bundle with size = 7510 modulo 8192"
+setup_modulo7510() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7510
+}
+test_modulo7510() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7520="Can insert bundle with size = 7520 modulo 8192"
+setup_modulo7520() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7520
+}
+test_modulo7520() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7530="Can insert bundle with size = 7530 modulo 8192"
+setup_modulo7530() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7530
+}
+test_modulo7530() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7540="Can insert bundle with size = 7540 modulo 8192"
+setup_modulo7540() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7540
+}
+test_modulo7540() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7550="Can insert bundle with size = 7550 modulo 8192"
+setup_modulo7550() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7550
+}
+test_modulo7550() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7560="Can insert bundle with size = 7560 modulo 8192"
+setup_modulo7560() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7560
+}
+test_modulo7560() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7570="Can insert bundle with size = 7570 modulo 8192"
+setup_modulo7570() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7570
+}
+test_modulo7570() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7580="Can insert bundle with size = 7580 modulo 8192"
+setup_modulo7580() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7580
+}
+test_modulo7580() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7590="Can insert bundle with size = 7590 modulo 8192"
+setup_modulo7590() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7590
+}
+test_modulo7590() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7600="Can insert bundle with size = 7600 modulo 8192"
+setup_modulo7600() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7600
+}
+test_modulo7600() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7610="Can insert bundle with size = 7610 modulo 8192"
+setup_modulo7610() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7610
+}
+test_modulo7610() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7620="Can insert bundle with size = 7620 modulo 8192"
+setup_modulo7620() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7620
+}
+test_modulo7620() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7630="Can insert bundle with size = 7630 modulo 8192"
+setup_modulo7630() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7630
+}
+test_modulo7630() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7640="Can insert bundle with size = 7640 modulo 8192"
+setup_modulo7640() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7640
+}
+test_modulo7640() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7650="Can insert bundle with size = 7650 modulo 8192"
+setup_modulo7650() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7650
+}
+test_modulo7650() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7660="Can insert bundle with size = 7660 modulo 8192"
+setup_modulo7660() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7660
+}
+test_modulo7660() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7670="Can insert bundle with size = 7670 modulo 8192"
+setup_modulo7670() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7670
+}
+test_modulo7670() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7680="Can insert bundle with size = 7680 modulo 8192"
+setup_modulo7680() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7680
+}
+test_modulo7680() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7690="Can insert bundle with size = 7690 modulo 8192"
+setup_modulo7690() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7690
+}
+test_modulo7690() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7700="Can insert bundle with size = 7700 modulo 8192"
+setup_modulo7700() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7700
+}
+test_modulo7700() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7710="Can insert bundle with size = 7710 modulo 8192"
+setup_modulo7710() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7710
+}
+test_modulo7710() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7720="Can insert bundle with size = 7720 modulo 8192"
+setup_modulo7720() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7720
+}
+test_modulo7720() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7730="Can insert bundle with size = 7730 modulo 8192"
+setup_modulo7730() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7730
+}
+test_modulo7730() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7740="Can insert bundle with size = 7740 modulo 8192"
+setup_modulo7740() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7740
+}
+test_modulo7740() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7750="Can insert bundle with size = 7750 modulo 8192"
+setup_modulo7750() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7750
+}
+test_modulo7750() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7760="Can insert bundle with size = 7760 modulo 8192"
+setup_modulo7760() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7760
+}
+test_modulo7760() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7770="Can insert bundle with size = 7770 modulo 8192"
+setup_modulo7770() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7770
+}
+test_modulo7770() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7780="Can insert bundle with size = 7780 modulo 8192"
+setup_modulo7780() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7780
+}
+test_modulo7780() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7790="Can insert bundle with size = 7790 modulo 8192"
+setup_modulo7790() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7790
+}
+test_modulo7790() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7800="Can insert bundle with size = 7800 modulo 8192"
+setup_modulo7800() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7800
+}
+test_modulo7800() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7810="Can insert bundle with size = 7810 modulo 8192"
+setup_modulo7810() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7810
+}
+test_modulo7810() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7820="Can insert bundle with size = 7820 modulo 8192"
+setup_modulo7820() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7820
+}
+test_modulo7820() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7830="Can insert bundle with size = 7830 modulo 8192"
+setup_modulo7830() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7830
+}
+test_modulo7830() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7840="Can insert bundle with size = 7840 modulo 8192"
+setup_modulo7840() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7840
+}
+test_modulo7840() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7850="Can insert bundle with size = 7850 modulo 8192"
+setup_modulo7850() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7850
+}
+test_modulo7850() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7860="Can insert bundle with size = 7860 modulo 8192"
+setup_modulo7860() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7860
+}
+test_modulo7860() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7870="Can insert bundle with size = 7870 modulo 8192"
+setup_modulo7870() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7870
+}
+test_modulo7870() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7880="Can insert bundle with size = 7880 modulo 8192"
+setup_modulo7880() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7880
+}
+test_modulo7880() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7890="Can insert bundle with size = 7890 modulo 8192"
+setup_modulo7890() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7890
+}
+test_modulo7890() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7900="Can insert bundle with size = 7900 modulo 8192"
+setup_modulo7900() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7900
+}
+test_modulo7900() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7910="Can insert bundle with size = 7910 modulo 8192"
+setup_modulo7910() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7910
+}
+test_modulo7910() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7920="Can insert bundle with size = 7920 modulo 8192"
+setup_modulo7920() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7920
+}
+test_modulo7920() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7930="Can insert bundle with size = 7930 modulo 8192"
+setup_modulo7930() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7930
+}
+test_modulo7930() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7940="Can insert bundle with size = 7940 modulo 8192"
+setup_modulo7940() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7940
+}
+test_modulo7940() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7950="Can insert bundle with size = 7950 modulo 8192"
+setup_modulo7950() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7950
+}
+test_modulo7950() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7960="Can insert bundle with size = 7960 modulo 8192"
+setup_modulo7960() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7960
+}
+test_modulo7960() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7970="Can insert bundle with size = 7970 modulo 8192"
+setup_modulo7970() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7970
+}
+test_modulo7970() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7980="Can insert bundle with size = 7980 modulo 8192"
+setup_modulo7980() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7980
+}
+test_modulo7980() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo7990="Can insert bundle with size = 7990 modulo 8192"
+setup_modulo7990() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 7990
+}
+test_modulo7990() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8000="Can insert bundle with size = 8000 modulo 8192"
+setup_modulo8000() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8000
+}
+test_modulo8000() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8010="Can insert bundle with size = 8010 modulo 8192"
+setup_modulo8010() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8010
+}
+test_modulo8010() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8020="Can insert bundle with size = 8020 modulo 8192"
+setup_modulo8020() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8020
+}
+test_modulo8020() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8030="Can insert bundle with size = 8030 modulo 8192"
+setup_modulo8030() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8030
+}
+test_modulo8030() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8040="Can insert bundle with size = 8040 modulo 8192"
+setup_modulo8040() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8040
+}
+test_modulo8040() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8050="Can insert bundle with size = 8050 modulo 8192"
+setup_modulo8050() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8050
+}
+test_modulo8050() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8060="Can insert bundle with size = 8060 modulo 8192"
+setup_modulo8060() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8060
+}
+test_modulo8060() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8070="Can insert bundle with size = 8070 modulo 8192"
+setup_modulo8070() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8070
+}
+test_modulo8070() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8080="Can insert bundle with size = 8080 modulo 8192"
+setup_modulo8080() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8080
+}
+test_modulo8080() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8090="Can insert bundle with size = 8090 modulo 8192"
+setup_modulo8090() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8090
+}
+test_modulo8090() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8100="Can insert bundle with size = 8100 modulo 8192"
+setup_modulo8100() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8100
+}
+test_modulo8100() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8110="Can insert bundle with size = 8110 modulo 8192"
+setup_modulo8110() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8110
+}
+test_modulo8110() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8120="Can insert bundle with size = 8120 modulo 8192"
+setup_modulo8120() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8120
+}
+test_modulo8120() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8130="Can insert bundle with size = 8130 modulo 8192"
+setup_modulo8130() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8130
+}
+test_modulo8130() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8140="Can insert bundle with size = 8140 modulo 8192"
+setup_modulo8140() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8140
+}
+test_modulo8140() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8150="Can insert bundle with size = 8150 modulo 8192"
+setup_modulo8150() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8150
+}
+test_modulo8150() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8160="Can insert bundle with size = 8160 modulo 8192"
+setup_modulo8160() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8160
+}
+test_modulo8160() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8170="Can insert bundle with size = 8170 modulo 8192"
+setup_modulo8170() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8170
+}
+test_modulo8170() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8180="Can insert bundle with size = 8180 modulo 8192"
+setup_modulo8180() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8180
+}
+test_modulo8180() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8190="Can insert bundle with size = 8190 modulo 8192"
+setup_modulo8190() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8190
+}
+test_modulo8190() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+
+doc_modulo8200="Can insert bundle with size = 8200 modulo 8192"
+setup_modulo8200() {
+   setup
+   # Insert a file to server A
+   set_instance +A
+   rhizome_add_file file1 8200
+}
+test_modulo8200() {
+   # Test that the bundle arrives at servers B, C and D
+   all_bundles_received() {
+      bundle_received_by $BID:$VERSION +B &&
+         bundle_received_by $BID:$VERSION +C &&
+         bundle_received_by $BID:$VERSION +D
+   }
+   wait_until --timeout=600 all_bundles_received
+}
+runTests $@
