@@ -1,5 +1,5 @@
 config system
-	option hostname 'Serval-MeshExtender-0.3'
+	option hostname 'Serval-MeshObserver-0.1'
 	option timezone 'CST-9:30CST,M10.1.0,M4.1.0/3'
 	option conloglevel '0'
 
