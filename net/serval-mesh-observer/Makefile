@@ -28,7 +28,6 @@ define Package/conffiles #optional - list of config files installed by package
 endef
 
 define Build/Compile #optional - how to compile source - when left blank calls make by default
-	( ./fetch-apk ; cd ./captiveportal ; tar zcvf ../servalwww.tgz . )
 endef
 
 define Package/serval-mesh-observer/install
