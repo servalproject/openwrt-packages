@@ -72,25 +72,8 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/serval-var/MeshObserver $(1)/serval-var
 	#LBARD install definitions
 	$(INSTALL_DIR) $(1)/etc/lbard
-	$(INSTALL_DIR) $(1)/etc/lbard/include
 	$(INSTALL_BIN) ./net/serval-mesh-observer/files/LBARD/MakeFile $(1)/etc/lbard
-	#LBARD header files
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/code_instrumentation.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/fakecsmaradio.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/golay.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/hf.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/lbard.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/radio.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/radio+type.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/serial.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/sha1.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/sha3.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/sync.h $(1)/etc/lbard/include
-	$(INSTALL_DATA) ./net/serval-mesh-observer/files/LBARD/include/util.h $(1)/etc/lbard/include
-	#LBARD packages
-	$(INSTALL_DIR) $(1)/etc/lbard/packages
-	$(INSTALL_BIN) ./net/serval-mesh-observer/files/LBARD/packages/lbard/Makefile $(1)/etc/lbard/packages
-	#LBARD source files? 
+
 	
 
 endef
