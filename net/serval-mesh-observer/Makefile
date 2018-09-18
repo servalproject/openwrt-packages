@@ -14,7 +14,7 @@ define Package/serval-mesh-observer
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+serval-dna +flash-rfd900
+	DEPENDS:=+serval-dna +flash-rfd900 ++serval-lbard
 	MAINTAINER:=Paul Gardner-Stephen <paul@servalproject.org>
 	URL:=http://servalproject.org
 endef
@@ -69,12 +69,7 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/etc/serval/lbard-restful.conf $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/fixfs $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/ramfs $(1)/etc/serval
-	$(INSTALL_BIN) ./files/serval-var/MeshObserver $(1)/serval-var
-	#LBARD install definitions
-	#$(INSTALL_DIR) $(1)/etc/lbard
-	#$(INSTALL_BIN) ./net/serval-mesh-observer/files/LBARD/MakeFile $(1)/etc/lbard
-
-	
+	$(INSTALL_BIN) ./files/serval-var/MeshObserver $(1)/serval-var	
 
 endef
 
