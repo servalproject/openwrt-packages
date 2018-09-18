@@ -1,5 +1,5 @@
 config system
-	option hostname 'Serval-MeshObserver-0.1'
+	option hostname 'Serval-MeshObserver-0.3'
 	option timezone 'CST-9:30CST,M10.1.0,M4.1.0/3'
 	option conloglevel '0'
 
@@ -10,4 +10,4 @@ config timeserver 'ntp'
 	list server '3.openwrt.pool.ntp.org'
         list server '192.168.2.54'
 	option enable_server '1'
-
+3
