@@ -1,5 +1,5 @@
 include $(TOPDIR)/rules.mk
-#commit test
+
 PKG_NAME:=serval-mesh-observer
 PKG_VERSION:=START.20180429.0810.50
 PKG_RELEASE:=1
@@ -14,7 +14,7 @@ define Package/serval-mesh-observer
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+serval-dna +flash-rfd900 ++serval-lbard
+	DEPENDS:=+serval-dna +flash-rfd900 +serval-lbard
 	MAINTAINER:=Paul Gardner-Stephen <paul@servalproject.org>
 	URL:=http://servalproject.org
 endef
