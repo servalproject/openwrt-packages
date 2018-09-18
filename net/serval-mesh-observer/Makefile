@@ -71,8 +71,8 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/etc/serval/ramfs $(1)/etc/serval
 	$(INSTALL_BIN) ./files/serval-var/MeshObserver $(1)/serval-var
 	#LBARD install definitions
-	$(INSTALL_DIR) $(1)/etc/lbard
-	$(INSTALL_BIN) ./net/serval-mesh-observer/files/LBARD/MakeFile $(1)/etc/lbard
+	#$(INSTALL_DIR) $(1)/etc/lbard
+	#$(INSTALL_BIN) ./net/serval-mesh-observer/files/LBARD/MakeFile $(1)/etc/lbard
 
 	
 
