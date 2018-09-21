@@ -5,7 +5,7 @@ PKG_VERSION:=START.20180516.1143.01
 PKG_RELEASE:=333
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/servalproject/lbard/tree/clover2020
+PKG_SOURCE_URL:=https://github.com/servalproject/lbard
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=30f97a410a9e8f305102e9f688d32f64ce2c9f22
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
