@@ -14,7 +14,7 @@ define Package/serval-mesh-observer
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+serval-dna +flash-rfd900
+	DEPENDS:=+serval-dna +flash-rfd900 +serval-lbard
 	MAINTAINER:=Paul Gardner-Stephen <paul@servalproject.org>
 	URL:=http://servalproject.org
 endef
