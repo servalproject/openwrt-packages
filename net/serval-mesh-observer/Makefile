@@ -50,11 +50,8 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/etc/rc.d/S13pre_wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S15wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S17mountstuff $(1)/etc/rc.d
-	$(INSTALL_BIN) ./files/etc/rc.d/S47radioeeprom $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S99mountcheck $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/serval/manuallbard $(1)/etc/serval
-	$(INSTALL_BIN) ./files/etc/serval/runlbard $(1)/etc/serval
-	$(INSTALL_BIN) ./files/etc/serval/runservald $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/serval.conf $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/boot_index_bottom.html $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/boot_index_middle.html $(1)/etc/serval
