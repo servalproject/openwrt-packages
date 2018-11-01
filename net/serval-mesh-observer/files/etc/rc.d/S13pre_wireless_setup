@@ -1,5 +1,5 @@
 #!/bin/sh
-keyValSSID="$(flash900 eeprom /dev/ttyATH0 directives get SSID)"
+keyValSSID="$(flash900 eeprom /dev/ttyS0 directives get SSID)"
 SSID="${keyValSSID##*=}"
 
 if [ $SSID ]; then

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# The following will result in the mesh extender having a different MAC and IP on every boot.
+# The following will result in the mesh observer having a different MAC and IP on every boot.
 # While this may be inconvenient in some ways, it also ensures that over multiple reboots that no
 # IP/MAC colissions should persist between nearby mesh extenders.  Drat that Birthday Paradox.
 

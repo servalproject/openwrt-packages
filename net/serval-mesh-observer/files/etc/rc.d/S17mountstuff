@@ -160,7 +160,7 @@ EOF
     servald keyring add
   fi
   SIDPREFIX=`servald keyring list | tail -1 | cut -c1-12`
-  sed -e 's/mesh-extender/'MeshExtender-"$SIDPREFIX"'/g' -e 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
+  sed -e 's/mesh-observer/'MeshObserver-"$SIDPREFIX"'/g' -e 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
 #  /etc/rc.d/S20network reload
 
   mount > /tmp/mount17.log
