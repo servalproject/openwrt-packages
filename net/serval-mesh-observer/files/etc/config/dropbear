@@ -3,5 +3,6 @@ config dropbear
         option RootPasswordAuth 'on'
         option Port         '22'
 	option enabled	    'yes'
+	option interface    'lan'
 #       option BannerFile   '/etc/banner'
 
