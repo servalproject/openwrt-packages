@@ -32,18 +32,8 @@ dropbear_start()
     fi
     /etc/serval/boot_report OK "Unlocking root password for SSH login"
     passwd -u root # unlock root if allowing dropbear
-    if [ -e /dos/yesroot ]; then
-        if [ ! -z /dos/yesroot ]; then
-            # Set root password according to contents of yesroot file
-            passmd5=`cat /dos/yesroot | md5sum | cut -f1 -d" "`
-	    /etc/serval/boot_report OK "Setting root password from /dos/yesroot (MD5=$passmd5)"
-            password=`cat /dos/yesroot | cut -c1-8`
-            ( sleep 1; echo "${password}" ; sleep 1; echo "${password}" ) | passwd root
-        fi 
-    else
-      /etc/serval/boot_report OK "Setting root password to default"
-      ( sleep 1; echo "root" ; sleep 1; echo "root" ) | passwd root
-    fi
+	# Set root password 
+    	passwd root1 
     
     append_ports()
     {
