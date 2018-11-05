@@ -21,7 +21,7 @@ config interface public
 	option proto 	static
 	option ipaddr	'172.APIP.1'
 	option netmask	'255.255.255.0'
-	option macaddr	'82:APETHER0'
+	option macaddr	'82:APETHER0' 
 
 config interface public1
 	option 'ifname'	'wlan1'
