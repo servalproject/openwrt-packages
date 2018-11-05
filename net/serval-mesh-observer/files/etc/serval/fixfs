@@ -12,7 +12,7 @@
      else
         # XXX - No bulk storage -- work out what to do.
         # We are now using microSD instead of USB, so our remedial options are different
-         /etc/serval/boot_report WARN "No USB or microSD card.  Mesh Extender will not store or relay communications."
+         /etc/serval/boot_report WARN "No USB or microSD card.  Mesh Observer will not store or relay communications."
         exit
      fi
   fi
