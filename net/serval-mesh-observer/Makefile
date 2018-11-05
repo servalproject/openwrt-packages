@@ -44,7 +44,7 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/etc/config/wireless.template $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/hotplug2.rules $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/etc/inittab $(1)/etc
+	#$(INSTALL_BIN) ./files/etc/inittab $(1)/etc
 	$(INSTALL_BIN) ./files/etc/profile $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S13pre_wireless_setup $(1)/etc/rc.d
