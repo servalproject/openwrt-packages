@@ -18,21 +18,8 @@ dropbear_start()
     /etc/serval/boot_report OK "Entering S50dropbear"
     
     # Only run dropbear if there does not exist a file /dos/noroot
-    # If starting, create the file, so that removing noroot only allows
-    # ssh to be available for one boot.
-
-    /etc/serval/boot_report OK "Locking root password"
-    passwd -l root # lock root
-    # /dos/yesroot causes root access to always be available
-    if [ ! -e /dos/yesroot ]; then
-        [ -e /dos/noroot ] && return 1
-        touch /dos/noroot
-        echo "Remove this file to enable SSH login to the mesh observer as root:root." >/dos/noroot
-        echo "This file is recreated on each reboot, so is effective for one boot only." >>/dos/noroot
-    fi
-    /etc/serval/boot_report OK "Unlocking root password for SSH login"
-    passwd -u root # unlock root if allowing dropbear
-	# Set root password 
+    #allow root password to be assigned here because ssh will be handy for testing purposes
+	echo Setting root password 
     	passwd root1 
     
     append_ports()
