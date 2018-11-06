@@ -19,8 +19,8 @@ dropbear_start()
     
     # Only run dropbear if there does not exist a file /dos/noroot
     #allow root password to be assigned here because ssh will be handy for testing purposes
-	echo Setting root password 
-    	passwd root1 
+	/etc/serval/boot_report OK "Set Root Password To: root"
+    	passwd root
     
     append_ports()
     {
