@@ -46,11 +46,12 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	#$(INSTALL_BIN) ./files/etc/inittab $(1)/etc
 	$(INSTALL_BIN) ./files/etc/profile $(1)/etc
+	$(INSTALL_BIN) ./files/etc/init.d/dropbear $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/rc.d
-	$(INSTALL_BIN) ./files/etc/rc.d/S13pre_wireless_setup $(1)/etc/rc.d
-	$(INSTALL_BIN) ./files/etc/rc.d/S20set_root_pw $(1)/etc/rc.d
+	$(INSTALL_BIN) ./files/etc/rc.d/S13pre_wireless_setup $(1)/etc/rc.d	
 	$(INSTALL_BIN) ./files/etc/rc.d/S15wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S17mountstuff $(1)/etc/rc.d
+	$(INSTALL_BIN) ./files/etc/rc.d/S20set_root_pw $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S99mountcheck $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/serval/manuallbard $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/serval.conf $(1)/etc/serval
