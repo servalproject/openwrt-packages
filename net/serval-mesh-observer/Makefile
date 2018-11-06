@@ -48,6 +48,7 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/etc/profile $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S13pre_wireless_setup $(1)/etc/rc.d
+	$(INSTALL_BIN) ./files/etc/init.d/set_root_pw $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S15wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S17mountstuff $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S99mountcheck $(1)/etc/rc.d
