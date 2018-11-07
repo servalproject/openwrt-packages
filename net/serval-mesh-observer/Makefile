@@ -42,6 +42,7 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/etc/config/system $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/uhttpd $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/config/wireless.template $(1)/etc/config
+	$(INSTALL_BIN) ./files/etc/config/wireless $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/hotplug2.rules $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/init.d
 	#$(INSTALL_BIN) ./files/etc/inittab $(1)/etc
