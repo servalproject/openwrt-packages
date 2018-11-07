@@ -9,4 +9,8 @@ config wifi-device radio0
   	list ht_capab	SHORT-GI-40
   	list ht_capab	RX-STBC1
         list ht_capab	DSSS_CCK-40
-	option disabled	0
+	
+config wifi-iface public
+	option ifname     mon0
+        option device     radio0              
+        option mode       monitor                 
