@@ -30,3 +30,8 @@ config wifi-iface
 	option ssid     OpenWrt
 	option encryption none
 
+config wifi-iface
+	option device   radio0
+	option ifname	mon0
+	option mode monitor
+
