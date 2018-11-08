@@ -4,7 +4,8 @@
 START=17
 
 start() {
-   
+	/etc/serval/boot_report OK "Entering S17mountstuff"    
+
      if [ -e /dev/sda ]; then
         # Bulk storage on USB memory stick	
         dev=/dev/sda
@@ -20,8 +21,9 @@ start() {
 	 # USB is not partitioned, so prepare it
 	 /etc/serval/boot_report WARN "Bulk storage (${fdiskdev}) not partitioned -- running mkfs"   
 	mkfs.vfat ${dev}1
+	hdparm -r0 /dev/sda
 fi
-
+/etc/serval/boot_report OK "Mounting ${dev} to /mnt" 
 mount ${dev}1 /mnt
 
   /etc/serval/boot_report OK "Exiting S17mountstuff"    
