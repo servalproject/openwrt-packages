@@ -20,8 +20,25 @@ start() {
   if [ ! -e ${dev}1 ]; then
 	 # USB is not partitioned, so prepare it
 	 /etc/serval/boot_report WARN "Bulk storage (${fdiskdev}) not partitioned -- running mkfs"   
+	
+       fdisk $fdiskdev <<EOF
+d
+1
+n
+p
+1
+
+t
+1
+c
+t
+4
+82
+w
+EOF
 	mkfs.vfat ${dev}1
-	hdparm -r0 /dev/sda
+  fi
+
 fi
 /etc/serval/boot_report OK "Mounting ${dev} to /mnt" 
 mount ${dev}1 /mnt
