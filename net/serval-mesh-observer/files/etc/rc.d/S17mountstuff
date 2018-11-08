@@ -22,7 +22,7 @@ start() {
 	mkfs.vfat ${dev}1
 fi
 
-mount ${dev} /mnt
+mount ${dev}1 /mnt
 
   /etc/serval/boot_report OK "Exiting S17mountstuff"    
 
