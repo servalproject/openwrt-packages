@@ -181,6 +181,9 @@ EOF
     mkdir -p /serval/www
   fi
 
+# mount the usb so packets can be captured under the mnt folder if available
+mount /dev/sda/sda3 /mnt/
+
   /etc/serval/boot_report OK "Finished mounting file systems"
 
   /etc/serval/boot_report OK "Read Radio EEPROM settings (${lines} lines)"
