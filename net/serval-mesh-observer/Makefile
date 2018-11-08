@@ -45,7 +45,6 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/etc/config/wireless $(1)/etc/config
 	$(INSTALL_BIN) ./files/etc/hotplug2.rules $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/init.d
-	#$(INSTALL_BIN) ./files/etc/inittab $(1)/etc
 	$(INSTALL_BIN) ./files/etc/profile $(1)/etc
 	$(INSTALL_BIN) ./files/etc/init.d/dropbear $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/etc/rc.d
@@ -63,12 +62,6 @@ define Package/serval-mesh-observer/install
 	$(INSTALL_BIN) ./files/etc/serval/rfd900-43-91.ihx $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/rfd900-82-86.ihx $(1)/etc/serval
 	$(INSTALL_BIN) ./files/etc/serval/rfd900-82-91.ihx $(1)/etc/serval
-	$(INSTALL_DIR) $(1)/serval
-	$(INSTALL_BIN) ./files/serval/MeshObserver $(1)/serval
-	$(INSTALL_BIN) ./files/etc/serval/lbard-restful.conf $(1)/etc/serval
-	$(INSTALL_BIN) ./files/etc/serval/fixfs $(1)/etc/serval
-	$(INSTALL_BIN) ./files/etc/serval/ramfs $(1)/etc/serval
-	$(INSTALL_BIN) ./files/serval-var/MeshObserver $(1)/serval-var	
 
 endef
 

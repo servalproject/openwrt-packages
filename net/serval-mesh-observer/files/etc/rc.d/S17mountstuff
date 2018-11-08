@@ -4,189 +4,25 @@
 START=17
 
 start() {
-
-    # Disable firewall as it is currently wrongly configured
-    /etc/init.d/firewall stop
-
-    # Start httpd for tracking boot progress
-    mkdir /tmp/www
-#    httpd -h /tmp/www
-    /etc/serval/boot_report OK "Entering S17mountstuff"    
-    
-  if [ -e /dev/mmcblk0 ]; then
-     # Bulk storage on SPI microSD
-     dev=/dev/mmcblk0p
-     fdiskdev=/dev/mmcblk0
-  else
-     /etc/serval/boot_report WARN "No microSD card present"    
+   
      if [ -e /dev/sda ]; then
-        # Bulk storage on USB memory stick
+        # Bulk storage on USB memory stick	
         dev=/dev/sda
         fdiskdev=/dev/sda
+	#notify boot report
+	/etc/serval/boot_report WARN "Bulk storage (${fdiskdev}) found"  
      else
         # XXX - No bulk storage -- work out what to do.
-        # We are now using microSD instead of USB, so our remedial options are different
-	 /etc/serval/boot_report WARN "No USB or microSD card.  Mesh Observer will not store or relay communications."
-        exit
+       /etc/serval/boot_report WARN "No Bulk storage found"
      fi
-  fi
 
   if [ ! -e ${dev}4 ]; then
-	 # microSD card is not partitioned, so prepare it
-	     /etc/serval/boot_report WARN "Bulk storage (${fdiskdev}) not partitioned -- running fdisk"    
-       fdisk $fdiskdev <<EOF
-d
-1
-d
-2
-d
-3
-d
-4
-n
-p
-1
-
-+250M
-n
-p
-2
-
-+1G
-n
-p
-4
-
-+1G
-n
-p
-3
-
-
-t
-1
-c
-t
-4
-82
-w
-EOF
+	 # USB is not partitioned, so prepare it
+	 /etc/serval/boot_report WARN "Bulk storage (${fdiskdev}) not partitioned -- running mkfs"   
 	mkfs.vfat ${dev}1
-	mkfs.ext4 ${dev}2
-	mkfs.ext4 ${dev}3
-        mkswap ${dev}4
-  fi
+fi
 
-  /etc/serval/boot_report OK "Enabling swap"
-  swapon ${dev}4
-  swapcount=`cat /proc/swaps | wc -l`
-  swapcount=$((swapcount - 1))
-  if [ $swapcount = 0 ]; then
-    /etc/serval/boot_report ERROR "Swap could not be enabled. Mesh Observer will be unstable"
-  else
-    msg=`tail -1 /proc/swaps | sed -e 's/\t/ /g' -e 's/  //g'`
-    /etc/serval/boot_report OK "Swap enabled using $msg"
-  fi
-
-  /etc/serval/boot_report OK "Making sure bulk storage unmounted"
-  umount /dos
-  umount /serval
-  umount /serval-var
-
-  /etc/serval/boot_report OK "Checking integrity of /serval"
-  fsck.ext4 -y ${dev}2
-  /etc/serval/boot_report OK "Checking integrity of /serval-var"
-  fsck.ext4 -y ${dev}3
-  /etc/serval/boot_report OK "Checking integrity of /dos"
-  dosfsck -y ${dev}1
-  
-  umount /dos
-  mount ${dev}1 /dos
-  if [ $? == 255 ]; then    
-    /etc/serval/boot_report ERROR "Failed to mount /dos on first attempt -- reformatting"
-    echo "Reformatting /dos"
-    mkfs.vfat ${dev}1
-    mount ${dev}1 /dos
-    if [ $? == 0 ]; then
-	/etc/serval/boot_report OK "Mounted /dos"
-    else
-	/etc/serval/boot_report ERROR "Could not mount /dos"
-    fi
-  else
-    /etc/serval/boot_report OK "Mounted /dos"
-  fi
-  mount ${dev}2 /serval > /tmp/mount2.error 2>&1
-  if [ $? == 255 ]; then
-     /etc/serval/boot_report ERROR "Failed to mount /serval on first attempt"
-     reformat=`cat /tmp/mount2.error | egrep "Invalid argument|Super|super" | wc -l`
-     if [ "x$reformat" != "x0" ]; then
-       /etc/serval/boot_report WARN "Reformatting /serval"
-       echo "Reformatting /serval"
-       dd if=/dev/zero of=/dev/mmcblk0p2 bs=1024 count=64
-       mkfs.ext4 ${dev}2
-       mount ${dev}2 /serval
-       if [ $? == 0 ]; then
-	   /etc/serval/boot_report OK "Mounted /serval"
-       else
-	   /etc/serval/boot_report ERROR "Could not mount /serval"
-       fi
-     fi
-  else
-    /etc/serval/boot_report OK "Mounted /serval"
-  fi
-  mount ${dev}3 /serval-var > /tmp/mount3.error 2>&1
-  if [ $? == 255 ]; then
-     /etc/serval/boot_report ERROR "Failed to mount /serval-var on first attempt"
-     reformat=`cat /tmp/mount3.error | egrep "Invalid argument|Super|super" | wc -l`
-     if [ "x$reformat" != "x0" ]; then
-       /etc/serval/boot_report WARN "Reformatting /serval-var"
-       echo "Reformatting /serval-var"
-       dd if=/dev/zero of=/dev/mmcblk0p3 bs=1024 count=64
-       mkfs.ext4 ${dev}3
-       mount ${dev}3 /serval-var
-       if [ $? == 0 ]; then
-	   /etc/serval/boot_report OK "Mounted /serval-var"
-       else
-	   /etc/serval/boot_report ERROR "Could not mount /serval-var"
-       fi
-     fi
-  fi
-
-  # Rename wireless interfaces based on SID of mesh observer
-  export SERVALINSTANCE_PATH=/serval-var
-  df -h > /tmp/prekeyring_fs.txt
-  keyringcount=`servald keyring list | wc -l`
-  if [[ $keyringcount == 2 ]]; then
-    servald keyring add
-  fi
-  SIDPREFIX=`servald keyring list | tail -1 | cut -c1-12`
-  sed -e 's/mesh-observer/'MeshObserver-"$SIDPREFIX"'/g' -e 's|MACADDRESS_HERE|'`cat /sys/class/ieee80211/phy0/macaddress`'|' < /etc/config/wireless.template > /etc/config/wireless
-#  /etc/rc.d/S20network reload
-
-  mount > /tmp/mount17.log
-  dosmounted=`mount | grep /dos | wc -l`
-
-  # Check if /serval-var and /serval have been mounted read-write.
-  # if not, or if they were never mounted at all, then create RAM disks
-  # on those mount points
-  svok=`mount | grep "/serval-var .*(rw" | wc -l`
-  if [ $svok != 1 ]; then
-    umount /serval-var
-    mount -t tmpfs -o nr_inodes=1k,mode=01777,nosuid,nodev,size=8M tmpfs /serval-var
-  fi
-  sok=`mount | grep "/serval.*(rw" | wc -l`
-  if [ $svok != 1 ]; then
-    umount /serval
-    mount -t tmpfs -o nr_inodes=1k,mode=01777,nosuid,nodev,size=4M tmpfs /serval
-    mkdir -p /serval/www
-  fi
-
-# mount the usb so packets can be captured under the mnt folder if available
-mount /dev/sda/sda3 /mnt/
-
-  /etc/serval/boot_report OK "Finished mounting file systems"
-
-  /etc/serval/boot_report OK "Read Radio EEPROM settings (${lines} lines)"
+mount ${dev} /mnt
 
   /etc/serval/boot_report OK "Exiting S17mountstuff"    
 
