@@ -16,7 +16,7 @@ start() {
        /etc/serval/boot_report WARN "No Bulk storage found"
      fi
 
-  if [ ! -e ${dev}4 ]; then
+  if [ ! -e ${dev}1 ]; then
 	 # USB is not partitioned, so prepare it
 	 /etc/serval/boot_report WARN "Bulk storage (${fdiskdev}) not partitioned -- running mkfs"   
 	mkfs.vfat ${dev}1
