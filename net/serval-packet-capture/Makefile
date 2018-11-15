@@ -27,10 +27,6 @@ define Package/serval-dna/description
 Captured packets are sent down the wire and into the networking lab.
 endef
 
-define Build/Configure
-	$(call Build/Configure/Default,--with-linux-headers=$(LINUX_DIR))
-endef
-
 define Package/packet-capture/install
 	$(INSTALL_DIR) $(1)/usr/bin
 endef
