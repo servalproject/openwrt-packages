@@ -30,7 +30,7 @@ Captured packets are sent down the wire and into the networking lab.
 endef
 
 define Package/packet-capture/install
-	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/etc
 endef
 
 $(eval $(call BuildPackage,packet-capture))
