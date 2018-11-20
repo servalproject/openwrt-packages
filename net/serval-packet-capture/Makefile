@@ -5,9 +5,8 @@ PKG_VERSION:=START.20180516.1143.01
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture.git
+PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=256d90c29577e1eeb383e8fb7a69e653ca90d99f
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_FIXUP:=autoreconf
