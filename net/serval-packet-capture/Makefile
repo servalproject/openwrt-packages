@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME=packet-capture
 PKG_VERSION:=MESHOBSERVER0.1
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture
@@ -30,11 +30,6 @@ define Package/serval-dna/description
 	Packet capture is a daemon that uses a round robin technique to capture packets from the mon0 interface defined in the Mesh Observer firmware, as well as 4 serial ports, which are UTAR serial to bridge USB adapters intercepting information from the Mesh Extender Breakout Board.
 
 Captured packets are sent down the wire and into the networking lab.
-endef
-
-define Package/packet-capture/install
-	$(INSTALL_DIR) $(1)/etc
-	$(INSTALL_BIN) $(PKG_BUILD_DIR) $(1)/etc
 endef
 
 $(eval $(call BuildPackage,packet-capture))
