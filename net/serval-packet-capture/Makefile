@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME=packet-capture
-PKG_VERSION:=0.1
+PKG_VERSION:=START.20180516.1143.01
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
@@ -19,7 +19,7 @@ define Package/packet-capture
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+librt +libsodium1 +libpcap-dev
+	DEPENDS:=+libpcap-dev
 	MAINTAINER:=Serval Mesh Observer Maintainer
 endef
 
