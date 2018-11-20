@@ -32,4 +32,9 @@ define Package/serval-dna/description
 Captured packets are sent down the wire and into the networking lab.
 endef
 
+define Package/serval-dna/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/packet-capture $(1)/usr/bin
+endef
+
 $(eval $(call BuildPackage,packet-capture))
