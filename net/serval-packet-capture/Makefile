@@ -2,10 +2,10 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME=packet-capture
 PKG_VERSION:=MESHOBSERVER0.1
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture.git
+PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION:=418b17f1cdd48cc9d300584e912fc7e8f0e72f50
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
