@@ -26,7 +26,7 @@ define Package/serval-packet-capture
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 endef
 
-define Package/serval-lbard/description
+define Package/serval-packet-capture/description
 	Packet capture is a daemon that uses a round robin technique to capture packets from mon0 and 4 ttyUSBx serial to USB UTAR bridge adapters.
 endef
 
@@ -35,7 +35,7 @@ define Build/Configure
 	$(call Build/Configure/Default,$(1),$(2),$(3))
 endef
 
-define Package/serval-lbard/install
+define Package/serval-packet-capture/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/packet-capture $(1)/usr/bin
 endef
