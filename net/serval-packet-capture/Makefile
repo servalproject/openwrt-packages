@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME=packet-capture
+PKG_NAME:=packet-capture
 PKG_VERSION:=MESHOBSERVER0.1
 PKG_RELEASE:=6
 
