@@ -30,11 +30,6 @@ define Package/serval-packet-capture/description
 	Packet capture is a daemon that uses a round robin technique to capture packets from mon0 and 4 ttyUSBx serial to USB UTAR bridge adapters.
 endef
 
-define Build/Configure
-	echo "$(PKG_VERSION)" >$(PKG_BUILD_DIR)/$(CONFIGURE_PATH)/$(strip $(3))/VERSION.txt
-	$(call Build/Configure/Default,$(1),$(2),$(3))
-endef
-
 define Package/serval-packet-capture/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/cap $(1)/usr/bin
