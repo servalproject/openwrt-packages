@@ -13,7 +13,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_FIXUP:=autoreconf
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DEPENDS:= +libpcap-dev
+PKG_BUILD_DEPENDS:= +libpcap +libc
 
 include $(INCLUDE_DIR)/package.mk
 
