@@ -23,7 +23,7 @@ define Package/serval-packet-capture
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+libpcap +libc
+	DEPENDS:=+libpcap-dev
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 endef
 
