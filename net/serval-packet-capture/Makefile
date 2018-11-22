@@ -40,4 +40,4 @@ define Package/serval-packet-capture/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/packet-capture $(1)/usr/bin
 endef
 
-$(eval $(call BuildPackage,packet-capture))
+$(eval $(call BuildPackage,serval-packet-capture))
