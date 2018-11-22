@@ -18,7 +18,7 @@ PKG_BUILD_DEPENDS:= +libpcap-dev
 include $(INCLUDE_DIR)/package.mk
 
 define Package/serval-packet-capture
-	TITLE:=Mesh Observer Packet Capture Service
+	TITLE:=Serval Low-Bandwidth Asynchronous Rhizome 
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
