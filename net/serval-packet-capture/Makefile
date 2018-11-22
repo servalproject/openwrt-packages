@@ -16,6 +16,7 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libpcap +libc
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/serval-packet-capture
 	TITLE:=Serval Low-Bandwidth Asynchronous Rhizome 
