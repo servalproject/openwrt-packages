@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
 PKG_VERSION:=START.20180813.0810.50
-PKG_RELEASE:=13
+PKG_RELEASE:=14
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture
@@ -15,6 +15,7 @@ PKG_FIXUP:=autoreconf
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libpcap +libc
 
+include $(INCLUDE_DIR)/cmake.mk
 include $(INCLUDE_DIR)/package.mk
 
 define Package/serval-packet-capture
