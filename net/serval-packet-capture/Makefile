@@ -35,4 +35,4 @@ define Package/serval-packet-capture/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/cap $(1)/usr/bin
 endef
 
-$(eval $(call BuildPackage,serval-packet-capture))
+$(eval $(call BuildPackage,serval-packet-capture, +libpcap, +libc))
