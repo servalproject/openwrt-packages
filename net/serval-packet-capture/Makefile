@@ -15,7 +15,6 @@ PKG_FIXUP:=autoreconf
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_BUILD_DEPENDS:= +libpcap +libc
 
-include $(INCLUDE_DIR)/cmake.mk
 include $(INCLUDE_DIR)/package.mk
 
 define Package/serval-packet-capture
