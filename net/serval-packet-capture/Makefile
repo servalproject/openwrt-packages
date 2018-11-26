@@ -18,7 +18,7 @@ PKG_BUILD_DEPENDS:= +libc +libpcap
 include $(INCLUDE_DIR)/package.mk
 
 define Package/serval-packet-capture
-	TITLE:=Serval Packet Capture 
+	TITLE:=Serval Packet Capture
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking

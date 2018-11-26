@@ -10,7 +10,7 @@ PKG_BUILD_DEPENDS:= +libc
 include $(INCLUDE_DIR)/package.mk
 
 define Package/serval-mesh-observer
-	TITLE:=Serval Project Mesh Traffic Observer (for supporting development and optimisation)
+	TITLE:=(for supporting development and optimisation)
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
