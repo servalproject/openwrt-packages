@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
-PKG_VERSION:=START.20181123.1450.01
+PKG_VERSION:=START.20181126.1213.01
 PKG_RELEASE:=336
 
 PKG_SOURCE_PROTO:=git
@@ -13,7 +13,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_FIXUP:=autoreconf
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DEPENDS:= +libc +libpcap
+PKG_BUILD_DEPENDS:= +libc +libpcap +serval-packet-capture
 
 include $(INCLUDE_DIR)/package.mk
 
