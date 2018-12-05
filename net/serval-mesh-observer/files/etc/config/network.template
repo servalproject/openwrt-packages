@@ -18,7 +18,7 @@ config interface 'lan1'
 
 config interface public
 	option 'ifname'	'mon0'
-	option proto 	static
+	option proto 	'static'
 	option ipaddr	'172.APIP.1'
 	option netmask	'255.255.255.0'
 	option macaddr	'82:APETHER0' 
