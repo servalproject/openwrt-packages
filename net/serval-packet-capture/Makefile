@@ -13,7 +13,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_FIXUP:=autoreconf
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DEPENDS:= +libc +libpcap +serval-packet-capture
+PKG_BUILD_DEPENDS:= +libc +libpcap +serval-packet-capture +libnet
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -22,7 +22,7 @@ define Package/serval-packet-capture
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+libc +libpcap +serval-packet-capture
+	DEPENDS:=+libc +libpcap +serval-packet-capture +libnet
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 endef
 
