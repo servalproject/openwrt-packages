@@ -1,3 +1,7 @@
+#system package requirements
+#sudo apt-get install libnet-dev
+#libnet-dev package already packed in my version of openwrt
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
