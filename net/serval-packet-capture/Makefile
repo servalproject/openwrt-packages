@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
-PKG_VERSION:=START.20181217.1340.01
-PKG_RELEASE:=344
+PKG_VERSION:=START.2019110.1340.01
+PKG_RELEASE:=345
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=17de4e6ea8f811470bcb10b39200d81f027e8f74
+PKG_SOURCE_VERSION:=1780004aec409716e4cce255dfbe5892203cfe85
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_FIXUP:=autoreconf
@@ -31,7 +31,7 @@ define Package/serval-packet-capture
 endef
 
 define Package/serval-packet-capture/description
-	Serval Rhizome transport helper for packet radio and other low-bandwidth interfaces.
+	Program to capture packets collected from both the wifi and 4 serial interfaces.
 endef
 
 define Build/Configure
