@@ -5,8 +5,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
-PKG_VERSION:=START.2019122.1741.01
-PKG_RELEASE:=348
+PKG_VERSION:=START.2019123.1539.01
+PKG_RELEASE:=353
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture
@@ -17,7 +17,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_FIXUP:=autoreconf
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DEPENDS:= +libc +libpcap +serval-packet-capture
+PKG_BUILD_DEPENDS:= +libc 
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -26,12 +26,12 @@ define Package/serval-packet-capture
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+libc +libpcap +serval-packet-capture 
+	DEPENDS:=+libc +libnet-1.2.x +libpcap
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 endef
 
 define Package/serval-packet-capture/description
-	Program to capture packets collected from both the wifi and 4 serial interfaces.
+	Capture packets collected from both wifi and 4 serial interfaces.
 endef
 
 define Build/Configure
