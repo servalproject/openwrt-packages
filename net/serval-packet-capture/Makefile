@@ -1,7 +1,3 @@
-#system package requirements
-#sudo apt-get install libnet-dev
-#libnet-dev package already packed in my version of openwrt
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
@@ -26,7 +22,7 @@ define Package/serval-packet-capture
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+libc +libnet-1.2.x +libpcap
+	DEPENDS:=+libc +libpcap
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 endef
 
