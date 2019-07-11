@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
-PKG_VERSION:=START.20190204.1850.02
-PKG_RELEASE:=355
+PKG_VERSION:=START.20190204.1850.01
+PKG_RELEASE:=354
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/jLanc/MeshObserver-Packet-Capture
