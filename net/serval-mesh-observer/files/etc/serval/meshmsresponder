@@ -22,12 +22,12 @@ for command in `cat /tmp/messages`; do
    case $action in
         help ) # Display list of commands this unit understands
 	        if [ $authorised == 1 ]; then
-	                message="I am a Serval Mesh Extender, Master. I will obey the following commands: "`cat $0 | grep " )" | grep -v grep`
+	                message="I am a Serval Mesh Observer, Master. I will obey the following commands: "`cat $0 | grep " )" | grep -v grep`
 		else
 		    if [ $helpdesk == 1 ]; then
-			    message="I am a Serval Mesh Extender. I know the following commands: "`cat $0 | grep " )" | grep -v grep | grep -v "requires authorisation"`
+			    message="I am a Serval Mesh Observer. I know the following commands: "`cat $0 | grep " )" | grep -v grep | grep -v "requires authorisation"`
 		    else
-			    message="I am a Serval Mesh Extender. I know the following commands: "`cat $0 | grep " )" | grep -v grep | grep -v "requires authorisation|for helpdesk"`
+			    message="I am a Serval Mesh Observer. I know the following commands: "`cat $0 | grep " )" | grep -v grep | grep -v "requires authorisation|for helpdesk"`
 		    fi
 		fi
                 servald meshms send message $me $them "${message}"
@@ -103,7 +103,7 @@ for command in `cat /tmp/messages`; do
                 ;;
 	wifioff ) # Disable ad-hoc wifi (requires authorisation)
 	       if [ $authorised == 1 ]; then
-		  message="Disabling ad-hoc wifi; only UHF packet radio will be available for talking to other Mesh Extenders"
+		  message="Disabling ad-hoc wifi; only UHF packet radio will be available for talking to other Mesh Observer"
 		  servald meshms send message $me $them "${message}"
 		  touch /dos/nomesh
 	        else
@@ -125,7 +125,7 @@ for command in `cat /tmp/messages`; do
                 ;;
 	uhfoff ) # Disable UHF packet radio (requires authorisation)
 	       if [ $authorised == 1 ]; then
-		  message="Disabling UHF packet radio; only ad-hoc wifi will be available for talking to other Mesh Extenders"
+		  message="Disabling UHF packet radio; only ad-hoc wifi will be available for talking to other Mesh Observer"
 		  servald meshms send message $me $them "${message}"
 		  touch /dos/nouhf
 	        else
