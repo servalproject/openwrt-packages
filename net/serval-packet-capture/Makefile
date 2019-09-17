@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
-PKG_VERSION:=START.2019.0917.1033.01
-PKG_RELEASE:=372
+PKG_VERSION:=START.2019.0917.1107.01
+PKG_RELEASE:=373
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/thomotron/serval-mesh-observer-packet-capture
@@ -13,7 +13,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_FIXUP:=autoreconf
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
-PKG_BUILD_DEPENDS:= +libc 
+PKG_BUILD_DEPENDS:= +libc +argp-standalone
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -22,7 +22,7 @@ define Package/serval-packet-capture
 	SECTION:=net
 	CATEGORY:=Network
 	SUBMENU:=Mesh networking
-	DEPENDS:=+libc +libpcap
+	DEPENDS:=+libc +libpcap +argp-standalone
 	MAINTAINER:=Serval DNA Maintainer <serval-dna@servalproject.org>
 	MAKE_PATH:=client
 endef
