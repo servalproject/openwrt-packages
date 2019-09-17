@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=serval-packet-capture
-PKG_VERSION:=START.2019.0904.1140.01
-PKG_RELEASE:=371
+PKG_VERSION:=START.2019.0917.1033.01
+PKG_RELEASE:=372
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/thomotron/serval-mesh-observer-packet-capture
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=7f6d121f0c04c17deaebd5f8a5e19cbd7966aa05
+PKG_SOURCE_VERSION:=e8695ddf5ec69cc86c2e522f72d8f4b29af0f80f
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_FIXUP:=autoreconf
