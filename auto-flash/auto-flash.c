@@ -226,7 +226,8 @@ int main(int argc,char **argv)
 	  write(fd,"reset\r",6);
 	  if (done_on_reset) {
 	    // Tell user we are done
-	    system("vlc alert.m3u");
+//	    system("vlc alert.m3u");
+        printf("\a");
 	    done_on_reset=0;
 	    ignore_uboot=1;
 	    fprintf(stderr,">>> Asserting ignore_uboot=1 in uboot banner check\n");
