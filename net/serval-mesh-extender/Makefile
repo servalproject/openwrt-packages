@@ -51,7 +51,7 @@ define Package/serval-mesh-extender/install
 	$(INSTALL_BIN) ./files/etc/profile $(1)/etc
 	$(INSTALL_DIR) $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S13pre_wireless_setup $(1)/etc/rc.d
-	$(INSTALL_BIN) ./files/etc/rc.d/S15wireless_setup $(1)/etc/rc.d
+	$(INSTALL_BIN) ./files/etc/rc.d/S18wireless_setup $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S17mountstuff $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S47radioeeprom $(1)/etc/rc.d
 	$(INSTALL_BIN) ./files/etc/rc.d/S49servald $(1)/etc/rc.d
