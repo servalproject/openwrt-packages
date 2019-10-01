@@ -21,8 +21,8 @@ echo $meship $meshE $ap0E $ap1E $apip
 
 # Determine whether to load our pre-defined template or a user-defined one
 NETWORK_TEMPLATE="/etc/config/network.template"
-if [ -e "/serval-var/network.template" ]; then
-    NETWORK_TEMPLATE="/serval-var/network.template"
+if [ -e "/dos/network.template" ]; then
+    NETWORK_TEMPLATE="/dos/network.template"
 fi
 
 # Apply our variables to the template and write to /etc/config/network
