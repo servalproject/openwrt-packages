@@ -16,6 +16,10 @@
 #include <strings.h>
 #include <stdlib.h>
 
+#define TFTP_FILENAME "openwrt-dragino2.bin"
+#define TFTP_ADDRESS "192.168.1.2"
+#define DEVICE_ADDRESS "192.168.1.1"
+
 int fd;
 char line[1024];
 int ofs = 0;
@@ -136,7 +140,9 @@ int main(int argc,char **argv)
         exit(3);
     }
 
-    fprintf(stderr,"Opening serial port...\n");
+    fprintf(stderr, "Will flash device via TFTP with file '"TFTP_FILENAME"' at address '"TFTP_ADDRESS"'\n");
+
+    fprintf(stderr, "Opening serial port...\n");
 
     int fd=open(argv[1],O_RDWR|O_NONBLOCK);
     if (fd==-1) {
@@ -190,7 +196,7 @@ int main(int argc,char **argv)
                         // Flush the command
                         write(fd, "\r", 1);
                     
-                        char* command="\r\ntftp 82000000 openwrt-dragino2.bin; erase 0x9f050000 +$filesize; cp.b 0x82000000 0x9f050000 $filesize; setenv bootcmd bootm 0x9f050000; saveenv; reset\r\n";
+                        char* command="\r\nset ipaddr "DEVICE_ADDRESS"; set serverip "TFTP_ADDRESS"; tftp 82000000 "TFTP_FILENAME"; erase 0x9f050000 +$filesize; cp.b 0x82000000 0x9f050000 $filesize; setenv bootcmd bootm 0x9f050000; saveenv; reset\r\n";
                         for(int i = 0; command[i]; i++) {
                             write(fd, &command[i], 1); // Write the character
                             usleep(2000); // Wait for it to be transmitted
