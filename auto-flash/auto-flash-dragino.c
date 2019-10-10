@@ -132,27 +132,6 @@ int next_char(int fd)
     return -1;
 }
 
-// Sends commands to reflash the board via TFTP
-void send_reflash_command()
-{
-    // Print a space and wait for the U-Boot console to load
-    write(fd," ",2);
-    usleep(1000000); // Wait a second
-
-    // Flush the command
-    write(fd,"\r",1);
-
-    char* command="\r\ntftp 82000000 openwrt-dragino; erase 0x9f050000 +$filesize; cp.b 0x82000000 0x9f050000 $filesize; setenv bootcmd bootm 0x9f050000; saveenv; reset\r\n";
-    for(int i = 0; command[i]; i++) {
-        write(fd, &command[i], 1); // Write the character
-        usleep(20000); // Wait for it to be transmitted
-    }
-
-    // Set a flag to mark reboot as the end of this board's flashing process
-    done_on_reset = 1;
-    fprintf(stderr,">>> Asserting done_on_reset=1 in uboot interrupt sequence\n");
-}
-
 int main(int argc,char **argv)
 {
     if (argc < 2) {
@@ -201,9 +180,31 @@ int main(int argc,char **argv)
                 // Is the device prompting us for the boot console?
                 if (!strncmp(line, "Hit any key to stop autoboot:  4", 32)) { // String is 32 chars long
                     fprintf(stderr, ">>> ignore_uboot=%d in uboot interrupt sequence\n", ignore_uboot);
-                    if (!ignore_uboot) {
-                        send_reflash_command();
-                    } else {
+                    if (!ignore_uboot)
+                    {
+                        // Wait a moment for the device to start accepting keystrokes
+                        usleep(10000); // 10ms
+                        
+                        // Print a space and wait for the U-Boot console to load
+                        write(fd, " ", 2);
+                        fsync(fd); // Flush the command
+                        usleep(3000000); // Wait three seconds
+                    
+                        // Flush the command
+                        write(fd, "\r", 1);
+                    
+                        char* command="\r\ntftp 82000000 openwrt-dragino; erase 0x9f050000 +$filesize; cp.b 0x82000000 0x9f050000 $filesize; setenv bootcmd bootm 0x9f050000; saveenv; reset\r\n";
+                        for(int i = 0; command[i]; i++) {
+                            write(fd, &command[i], 1); // Write the character
+                            usleep(2000); // Wait for it to be transmitted
+                        }
+                    
+                        // Set a flag to mark reboot as the end of this board's flashing process
+                        done_on_reset = 1;
+                        fprintf(stderr,">>> Asserting done_on_reset=1 in uboot interrupt sequence\n");
+                    }
+                    else
+                    {
                         ignore_uboot=0;
                         fprintf(stderr,">>> Clearing ignore_uboot=0 in uboot interrupt sequence\n");
                     }
