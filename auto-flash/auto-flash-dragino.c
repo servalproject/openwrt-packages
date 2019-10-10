@@ -193,7 +193,7 @@ int main(int argc,char **argv)
                         // Flush the command
                         write(fd, "\r", 1);
                     
-                        char* command="\r\ntftp 82000000 openwrt-dragino; erase 0x9f050000 +$filesize; cp.b 0x82000000 0x9f050000 $filesize; setenv bootcmd bootm 0x9f050000; saveenv; reset\r\n";
+                        char* command="\r\ntftp 82000000 openwrt-dragino2.bin; erase 0x9f050000 +$filesize; cp.b 0x82000000 0x9f050000 $filesize; setenv bootcmd bootm 0x9f050000; saveenv; reset\r\n";
                         for(int i = 0; command[i]; i++) {
                             write(fd, &command[i], 1); // Write the character
                             usleep(2000); // Wait for it to be transmitted
