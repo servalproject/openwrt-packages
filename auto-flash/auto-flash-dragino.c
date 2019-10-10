@@ -1,12 +1,9 @@
 /*
   Utility to flash a Dragino2 when it connects to a given serial port.
-  Looks for Uboot prompt. If it is showing the default uboot (that can be
-  interrupted with any key), then it reflashes uboot and resets the board.
-  When it sees a board with the correct uboot, it reflashes the mesh extender
-  firmware.  When that completes, and the board is booting, it runs xclock
-  to raise a visual alert for the operator to remove the mesh extender and
-  insert the next one.
-
+  Looks for Uboot prompt. It reflashes the mesh extender firmware.
+  When that completes, and the board is booting, it prints the BEL
+  character to raise an audible alert for the operator to remove the
+  device and insert the next one.
 */
 
 #include <stdio.h>
