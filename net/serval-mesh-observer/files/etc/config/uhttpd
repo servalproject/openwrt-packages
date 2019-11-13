@@ -89,4 +89,4 @@ config cert px5g
 	option location		Bedford Park
 
 	# Common name
-	option commonname	ServalProjectMeshExtender
+	option commonname	ServalProjectMeshObserver

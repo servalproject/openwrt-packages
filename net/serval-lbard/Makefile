@@ -5,9 +5,9 @@ PKG_VERSION:=START.20180516.1143.01
 PKG_RELEASE:=333
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/servalproject/lbard.git
+PKG_SOURCE_URL:=https://github.com/servalproject/lbard
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=6ed1ee9d0028b693bbceea761f8b53283b2c47ae
+PKG_SOURCE_VERSION:=85dedb02de515a70f6ed9f50fdde19bdf9657b3a
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 
 PKG_FIXUP:=autoreconf
