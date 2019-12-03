@@ -16,13 +16,17 @@ start() {
     fi
     /etc/serval/boot_report OK "/etc/inittab ok"
 
-    # Start servald
+    # Set up Servald paths and config
     /etc/serval/boot_report OK "Setting up SERVALINSTANCE_PATH"
     export SERVALINSTANCE_PATH=/serval-var
     mkdir -p $SERVALINSTANCE_PATH
     mkdir -p /var/run/serval
     mkdir -p $SERVALINSTANCE_PATH/log
-    cp /etc/serval/serval.conf $SERVALINSTANCE_PATH/
+    
+    # Copy default config if required
+    if [ ! -e "$SERVALINSTANCE_PATH/serval.conf" ]; then
+        cp /etc/serval/serval.conf $SERVALINSTANCE_PATH/
+    fi
 
     # Flash radio if required
     /etc/serval/boot_report OK "Checking if RFD900 requires re-flashing"
