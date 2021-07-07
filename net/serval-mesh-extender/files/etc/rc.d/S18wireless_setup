@@ -19,7 +19,14 @@ meshE=`dd if=/dev/urandom bs=5 count=1 | hexdump -e '1/1 "%02X" ":" 1/1 "%02X" "
 
 echo $meship $meshE $ap0E $ap1E $apip
 
-sed -e s/MESHIP/$meship/g -e s/APIP/$apip/g -e s/MESHETHER/$meshE/g  -e s/APETHER0/$ap0E/g -e s/APETHER1/$ap1E/g < /etc/config/network.template > /etc/config/network
+# Determine whether to load our pre-defined template or a user-defined one
+NETWORK_TEMPLATE="/etc/config/network.template"
+if [ -e "/dos/network.template" ]; then
+    NETWORK_TEMPLATE="/dos/network.template"
+fi
+
+# Apply our variables to the template and write to /etc/config/network
+sed -e s/MESHIP/$meship/g -e s/APIP/$apip/g -e s/MESHETHER/$meshE/g  -e s/APETHER0/$ap0E/g -e s/APETHER1/$ap1E/g < $NETWORK_TEMPLATE > /etc/config/network
 
 # If left hanging around can cause problems.
 # (should be deleted when we fresh install, but this doesn't always seem to be the case)
